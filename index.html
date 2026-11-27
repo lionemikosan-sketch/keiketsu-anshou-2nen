@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap">
+<link rel="stylesheet" href="zukan.css">
 <style>
 /* Layout: phone app shell — scrolling tab views (スタンプラリー / 練習 / 記録) over a bottom tab bar; play screens and sheets float above it. Bright orange "stamp card" look, chunky sticker cards. */
 :root{
@@ -39,8 +40,8 @@ h1,h2,h3{text-wrap:balance}
 #views{flex:1;min-height:0;position:relative}
 .view{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-left:var(--gut-l);padding-right:var(--gut-r);padding-block:14px 28px}
 .wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-.tabbar{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;background:var(--paper);border-top:2px solid var(--line);padding:6px var(--gut-r) max(8px,env(safe-area-inset-bottom,0px)) var(--gut-l)}
-.tabbar button{border:0;background:transparent;border-radius:16px;padding:6px 4px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11.5px;font-weight:800;color:var(--mute)}
+.tabbar{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;background:var(--paper);border-top:2px solid var(--line);padding:6px var(--gut-r) max(8px,env(safe-area-inset-bottom,0px)) var(--gut-l)}
+.tabbar button{border:0;background:transparent;border-radius:16px;padding:6px 2px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:10.5px;white-space:nowrap;letter-spacing:-.02em;font-weight:800;color:var(--mute)}
 .tabbar svg{width:24px;height:24px}
 .tabbar button[aria-current="page"]{color:var(--or);background:var(--soft2)}
 
@@ -393,12 +394,14 @@ h1,h2,h3{text-wrap:balance}
   <main id="views">
     <section id="v-rally" class="view" aria-label="スタンプラリー"></section>
     <section id="v-prac" class="view" aria-label="練習" hidden></section>
+    <section id="v-zukan" class="view" aria-label="ずかん" hidden></section>
     <section id="v-log" class="view" aria-label="記録" hidden></section>
   </main>
   <nav class="tabbar" id="tabbar" aria-label="画面切り替え"></nav>
 </div>
 <div id="play" hidden></div>
 
+<script src="zukan.js"></script>
 <script>
 // ===== 経穴データ（流注順・WHO標準／教科書準拠 361穴） =====
 const RAW = [
@@ -465,7 +468,7 @@ const stUnit=st=>st.upto?"穴":"経";
 
 // ===== 保存（この端末のブラウザ内のみ） =====
 const KEY="keiketsu-anshou-2nen-v1";   // 1年生版と保存場所を分ける
-let store={logs:[],furi:true,sound:true,contFrom:"LU",contExtra:false,single:"flow",win:0,official:{},tab:"rally",rstyle:"oral"};
+let store={zqMer:"LU",logs:[],furi:true,sound:true,contFrom:"LU",contExtra:false,single:"flow",win:0,official:{},tab:"rally",rstyle:"oral"};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)store=Object.assign(store,s);}catch(e){}
 if(!store.official||typeof store.official!=="object")store.official={};
 function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
@@ -492,6 +495,7 @@ const ICON={
   mute:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9h4l5-4v14l-5-4h-4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
   stamp:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2.3"/><circle cx="12" cy="12" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M9.4 12.2l1.9 1.9 3.4-3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   cards:`<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3.5" width="12.5" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M4.5 7.5v10a3 3 0 0 0 3 3h8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>`,
+  body:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.6" r="2.6" fill="currentColor"/><path d="M6 9.5h12M12 8.5v6.5M12 15l-3.2 6.5M12 15l3.2 6.5M6.5 9.5l-1.5 5M17.5 9.5l1.5 5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   chart:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V12M10 20V6M15 20v-9M20 20V9" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>`,
 };
 
@@ -709,13 +713,13 @@ function askPin(title,onOk){
 // ===== タブ =====
 function setTab(t){
   store.tab=t;save();
-  for(const v of ["rally","prac","log"])$("#v-"+v).hidden=v!==t;
+  for(const v of ["rally","prac","zukan","log"])$("#v-"+v).hidden=v!==t;
   $$("#tabbar button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===t?"page":"false"));
   render();$("#v-"+t).scrollTop=0;
 }
 function render(){
   document.body.classList.toggle("nofuri",!store.furi);
-  if(store.tab==="prac")renderPrac();else if(store.tab==="log")renderLog();else renderRally();
+  if(store.tab==="prac")renderPrac();else if(store.tab==="log")renderLog();else if(store.tab==="zukan")Zukan.show();else renderRally();
 }
 function toggles(){
   return `<div class="toggles"><button class="pill-toggle" data-tg="sound" aria-pressed="${store.sound}"><span class="dot"></span>効果音</button><button class="pill-toggle" data-tg="furi" aria-pressed="${store.furi}"><span class="dot"></span>ふりがな</button></div>`;
@@ -981,6 +985,11 @@ function renderPrac(){
       <button class="btn-go" id="goCont">はじめる<small>${ids.length}経 ${total}穴</small></button>
       ${resume?`<button class="btn-resume" id="resume">前回の続き：<b>${esc(resume.fail.n)}</b>（${MI[resume.fail.m].short}）から再開 →</button>`:""}
     </section>
+    <section class="box zq"><div class="sec-h" style="margin:0"><h2>ずかんで位置を覚える</h2></div>
+      <p class="hint">経絡を選んで、図の上で練習します。場所あて＝名前を見て点をタップ。名前あて＝光った点の名前を思い出す。</p>
+      <div class="zq-mers" role="group" aria-label="練習する経絡">${Zukan.list().map(m=>`<button data-zm="${m.id}" style="--c:${m.color}" aria-pressed="${m.id===store.zqMer}"><i></i>${m.short}</button>`).join("")}</div>
+      <div class="zq-go"><button class="btn-p" data-zq="where">場所あて<small>名前 → 図の点をタップ</small></button><button class="btn-s" data-zq="name">名前あて<small>光った点 → 名前を思い出す</small></button></div>
+    </section>
     <section><div class="single-head"><div class="sec-h" style="margin:0"><h2>個別モード</h2></div>
       <div class="seg" role="group" aria-label="個別モードの練習方法"><button data-sm="flow" aria-pressed="${!cumul}">通し</button><button data-sm="cumul" aria-pressed="${cumul}">累積リハーサル</button></div>
       ${cumul?`<p class="hint">1穴ずつ増やしながら、毎回さかのぼって言い直します。<br>中府 → 中府・雲門 → 中府・雲門・天府 …　間違えたらその周を最初から。</p>
@@ -1002,16 +1011,20 @@ function renderPrac(){
   $$("[data-one]",v).forEach(b=>b.onclick=()=>start(cumul?{mode:"cumul",ids:[b.dataset.one],win:store.win}:{mode:"single",ids:[b.dataset.one]}));
   $$("[data-sm]",v).forEach(b=>b.onclick=()=>{store.single=b.dataset.sm;save();renderPrac();});
   $$("[data-win]",v).forEach(b=>b.onclick=()=>{store.win=+b.dataset.win;save();renderPrac();});
+  $$("[data-zm]",v).forEach(b=>b.onclick=()=>{store.zqMer=b.dataset.zm;save();$$("[data-zm]",v).forEach(x=>x.setAttribute("aria-pressed",x===b));});
+  $$("[data-zq]",v).forEach(b=>b.onclick=()=>{setTab("zukan");Zukan.startQuiz(b.dataset.zq,store.zqMer||"LU");});
 }
 
 // ===== 記録画面 =====
 function logTitle(l){
+  if(l.mode==="zukan")return `ずかん ${l.kind==="where"?"場所あて":"名前あて"} ${MI[l.ids[0]].name}`;
   if(l.mode==="rally")return `ラリー 第${l.stage}段階 ${STAGES[l.stage-1].label}`;
   if(l.mode==="single")return MI[l.ids[0]].name;
   if(l.mode==="cumul")return `累積 ${MI[l.ids[0]].name}${l.win?`（直近${l.win}穴）`:""}`;
   return `連続 ${MI[l.ids[0]].short}→${MI[l.ids[l.ids.length-1]].short}`;
 }
 function logDetail(l){
+  if(l.mode==="zukan")return `${l.correct}/${l.total}正解${l.misses&&l.misses.length?` · ミス：${l.misses.slice(0,3).join("・")}${l.misses.length>3?"…":""}`:""} · ${fmt(l.sec)} · ${fmtDate(l.t)}`;
   if(l.mode==="rally"){const st=STAGES[l.stage-1];
     const s={clear:"クリア",over:"時間オーバー",fail:l.fail?`${l.fail.n}でつまった`:"つまった",quit:"ギブアップ"}[l.status];
     return `${s} · ${l.sec.toFixed(1)}/${st.limit}秒 · ${l.style==="oral"?"本番形式":"カード"} · ${fmtDate(l.t)}`;}
@@ -1024,7 +1037,8 @@ function logDetail(l){
 }
 function logRow(l){
   let dots,b;
-  if(l.mode==="rally"){dots=`<i style="--acc:var(--or)"></i>`;
+  if(l.mode==="zukan"){dots=`<i style="--acc:${col(l.ids[0])}"></i>`;b=l.correct===l.total?'<span class="badge clear">全問正解</span>':`<span class="badge quit">${l.total-l.correct}問ミス</span>`;}
+  else if(l.mode==="rally"){dots=`<i style="--acc:var(--or)"></i>`;
     b={clear:'<span class="badge clear">クリア</span>',over:'<span class="badge over">オーバー</span>',fail:'<span class="badge fail">つまった</span>',quit:'<span class="badge quit">中断</span>'}[l.status];}
   else{const ids=l.mode!=="cont"?l.ids:[...new Set([l.ids[0],l.fail?l.fail.m:l.ids[l.ids.length-1]])];
     dots=ids.map(id=>`<i style="--acc:${col(id)}"></i>`).join("");
@@ -1256,9 +1270,10 @@ document.addEventListener("keydown",e=>{
 });
 
 // 起動
-$("#tabbar").innerHTML=[["rally","stamp","スタンプラリー"],["prac","cards","練習"],["log","chart","記録"]].map(([t,ic,l])=>`<button data-tab="${t}">${ICON[ic]}<span>${l}</span></button>`).join("");
+$("#tabbar").innerHTML=[["rally","stamp","スタンプラリー"],["prac","cards","練習"],["zukan","body","ずかん"],["log","chart","記録"]].map(([t,ic,l])=>`<button data-tab="${t}">${ICON[ic]}<span>${l}</span></button>`).join("");
 $$("#tabbar button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
-setTab(["rally","prac","log"].includes(store.tab)?store.tab:"rally");
+if(location.hash==="#zukan")store.tab="zukan";
+setTab(["rally","prac","zukan","log"].includes(store.tab)?store.tab:"rally");
 </script>
 </body>
 </html>
