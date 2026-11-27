@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap">
-<link rel="stylesheet" href="zukan.css?v=202611271453">
+<link rel="stylesheet" href="zukan.css?v=202611272230">
 <style>
 /* Layout: phone app shell — scrolling tab views (スタンプラリー / 練習 / 記録) over a bottom tab bar; play screens and sheets float above it. Bright orange "stamp card" look, chunky sticker cards. */
 :root{
@@ -431,7 +431,7 @@ h1,h2,h3{text-wrap:balance}
 </div>
 <div id="play" hidden></div>
 
-<script src="zukan.js?v=202611271453"></script>
+<script src="zukan.js?v=202611272230"></script>
 <script>
 // ===== 経穴データ（流注順・WHO標準／教科書準拠 361穴） =====
 const RAW = [
@@ -641,6 +641,8 @@ function openSheet(html,lock=false){
   closeSheet();
   const sc=document.createElement("div");sc.className="scrim";sc.id="scrim";
   sc.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
+  const t0=performance.now();
+  sc.addEventListener("click",e=>{if(performance.now()-t0<450){e.stopPropagation();e.preventDefault();}},true);
   if(!lock)sc.addEventListener("click",e=>{if(e.target===sc)closeSheet();});
   document.body.appendChild(sc);
   setTimeout(()=>{const b=sc.querySelector(".btn-p");b&&b.focus({preventScroll:true});},60);

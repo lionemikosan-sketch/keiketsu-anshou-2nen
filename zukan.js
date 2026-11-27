@@ -521,7 +521,7 @@ function endQuiz(){
 function finishQuiz(){
   const sec=(performance.now()-Q.t0)/1000,n=Q.order.length,{kind,id,correct}=Q,misses=[...new Set(Q.misses)];
   const l={t:Date.now(),mode:"zukan",kind,ids:[id],total:n,correct,sec:Math.round(sec),misses:misses.map(i=>mer.pts[i].n)};
-  store.logs.unshift(l);store.logs=store.logs.slice(0,400);save();
+  if(typeof addLog==="function")addLog(l);else{store.logs.unshift(l);store.logs=store.logs.slice(0,400);save();}
   const perfect=correct===n;
   const sc=openSheet(`<div class="rr"><div class="mas">${tsubo(perfect?"happy":correct>=n*0.7?"normal":"sad")}</div>
       <h3 class="${perfect?"ok":""}">${perfect?"全問正解！":`${correct} / ${n} 正解`}</h3>
@@ -538,5 +538,12 @@ function finishQuiz(){
   Q.k=Q.order.length;
 }
 
-return {show,startQuiz,list:()=>MERS.map(m=>({id:m.id,short:m.short,color:EL[m.c],n:m.pts.length})),data:MERS};
+// ---------- カード用の小さな位置図（ツボガチャ）と、指定した経穴を開く ----------
+function mini(id,i,w=300){
+  const m=MERS.find(x=>x.id===id);if(!m||!m.pts[i])return "";
+  const p=m.pts[i],[cx,cy]=p.p,h=w*0.75;
+  return `<svg class="zmini" viewBox="${cx-w/2} ${cy-h/2} ${w} ${h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="--mc:${EL[m.c]}"><g class="figure">${figure(p.v)}</g><circle class="zm-glow" cx="${cx}" cy="${cy}" r="20"/><circle class="zm-dot" cx="${cx}" cy="${cy}" r="8"/></svg>`;
+}
+function focus(id,i){show();if(Q)return;setMer(id);setTimeout(()=>select(i),160);}
+return {show,startQuiz,mini,focus,list:()=>MERS.map(m=>({id:m.id,short:m.short,color:EL[m.c],n:m.pts.length})),data:MERS};
 })();
