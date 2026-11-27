@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="2年生特別バージョン：肺経から肝経まで全12経のスタンプラリーに挑戦できるタイムアタック">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="経穴暗唱2年">
+<meta name="theme-color" content="#FFF5EB">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>経穴暗唱スタンプラリー 2年生</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap">
+<style>
+/* Layout: phone app shell — scrolling tab views (スタンプラリー / 練習 / 記録) over a bottom tab bar; play screens and sheets float above it. Bright orange "stamp card" look, chunky sticker cards. */
+:root{
+  --bg:#FFF5EB; --paper:#FFFFFF; --soft:#FFE8D4; --soft2:#FFF1E4; --line:#F4D6BD; --ink:#3A2418; --mute:#8F7363; --faint:#D9BFAE;
+  --or:#F26A1B; --or-d:#D4520A; --or-l:#FF9F55; --yel:#FFC83D; --red:#E5402B; --ok:#1F9E63; --ok-l:#DCF4E7; --ng-l:#FDE4DF;
+  --wood:#33A866; --fire:#EF573A; --earth:#E59E12; --metal:#8B9AAA; --water:#3D6FD6; --gov:#8A61CF; --conc:#D2559A;
+  --f:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --gut-l:max(16px,env(safe-area-inset-left,0px)); --gut-r:max(16px,env(safe-area-inset-right,0px));
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);background-image:radial-gradient(var(--soft) 1.4px,transparent 1.6px);background-size:18px 18px;color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.6;overflow:hidden;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+h1,h2,h3{text-wrap:balance}
+
+/* ---------- shell ---------- */
+#shell{height:100%;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#views{flex:1;min-height:0;position:relative}
+.view{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-left:var(--gut-l);padding-right:var(--gut-r);padding-block:14px 28px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.tabbar{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;background:var(--paper);border-top:2px solid var(--line);padding:6px var(--gut-r) max(8px,env(safe-area-inset-bottom,0px)) var(--gut-l)}
+.tabbar button{border:0;background:transparent;border-radius:16px;padding:6px 4px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11.5px;font-weight:800;color:var(--mute)}
+.tabbar svg{width:24px;height:24px}
+.tabbar button[aria-current="page"]{color:var(--or);background:var(--soft2)}
+
+/* ---------- common bits ---------- */
+.label{font-size:12px;letter-spacing:.12em;color:var(--mute);font-weight:800;margin:0 0 8px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.sec-h h2{margin:0;font-size:19px;font-weight:900;display:flex;align-items:center;gap:8px}
+.sec-h h2::before{content:"";width:6px;height:20px;border-radius:3px;background:var(--or)}
+.sec-h span{font-size:12px;color:var(--mute);font-weight:700}
+.box{background:var(--paper);border:2px solid var(--line);border-radius:22px;box-shadow:0 4px 0 var(--line)}
+.hint{font-size:12.5px;color:var(--mute);margin:0;line-height:1.75}
+.toggles{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill-toggle{display:flex;align-items:center;gap:6px;border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:800;color:var(--mute);white-space:nowrap}
+.pill-toggle .dot{width:9px;height:9px;border-radius:50%;background:var(--faint)}
+.pill-toggle[aria-pressed="true"]{color:var(--ink)}
+.pill-toggle[aria-pressed="true"] .dot{background:var(--or)}
+.btn-p{border:0;border-radius:18px;background:var(--or);color:#fff;font-weight:900;font-size:17px;letter-spacing:.06em;padding:14px 16px;box-shadow:0 5px 0 var(--or-d);transition:transform .06s,box-shadow .06s}
+.btn-p:active{transform:translateY(3px);box-shadow:0 2px 0 var(--or-d)}
+.btn-s{border:2px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink);font-weight:800;font-size:15px;padding:12px 14px;box-shadow:0 4px 0 var(--line);transition:transform .06s,box-shadow .06s}
+.btn-s:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.linkbtn{background:none;border:0;color:var(--mute);font-size:13px;font-weight:700;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+.seg{display:inline-flex;align-self:flex-start;background:var(--soft);border-radius:999px;padding:4px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:7px 15px;font-size:13.5px;font-weight:800;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--paper);color:var(--or-d);box-shadow:0 2px 0 var(--line)}
+.seg.wide{display:grid;grid-template-columns:1fr 1fr;align-self:stretch}
+
+/* ---------- rally home ---------- */
+.hero{position:relative;background:var(--or);color:#fff;border-radius:28px;padding:18px 18px 16px;overflow:hidden;box-shadow:0 5px 0 var(--or-d)}
+.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.16) 2px,transparent 2.2px);background-size:16px 16px;pointer-events:none}
+.hero>*{position:relative}
+.hero-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;font-weight:800}
+.tag{background:#fff;color:var(--or-d);border-radius:999px;padding:1px 10px}
+.period{background:rgba(255,255,255,.2);border-radius:999px;padding:1px 10px}
+.period b{margin-left:6px;color:var(--yel)}
+.hero h1{margin:10px 0 0;font-size:31px;font-weight:900;line-height:1.15;letter-spacing:.02em}
+.hero h1 small{display:block;font-size:16px;font-weight:800;opacity:.9;letter-spacing:.2em}
+.talk{display:flex;align-items:flex-end;gap:8px;margin-top:12px}
+.talk .mascot{flex:none;width:78px;animation:bob 2.6s ease-in-out infinite}
+.bubble{position:relative;background:#fff;color:var(--ink);border-radius:18px;padding:10px 13px;font-size:13px;font-weight:700;line-height:1.6;margin-bottom:10px;min-width:0}
+.bubble::before{content:"";position:absolute;left:-7px;bottom:14px;border:8px solid transparent;border-right-color:#fff;border-left:0}
+.bubble b{color:var(--or-d)}
+@keyframes bob{50%{transform:translateY(-5px) rotate(-2deg)}}
+
+.score{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.score-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.score-top .k{font-size:13px;font-weight:800;color:var(--mute)}
+.score-top .v{font-size:15px;font-weight:800;color:var(--mute)}
+.score-top .v b{font-size:36px;font-weight:900;color:var(--or);font-variant-numeric:tabular-nums;line-height:1}
+.score-bar{display:flex;gap:3px;height:14px}
+.score-bar i{flex:var(--w) 1 0;background:var(--soft);border-radius:4px}
+.score-bar i.on{background:var(--red)}
+.score-bar i.pr{background:var(--or-l);opacity:.55}
+.score-sub{font-size:12px;color:var(--mute);font-weight:700;display:flex;gap:12px;flex-wrap:wrap}
+.score-sub i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+
+.stamps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.slot{position:relative;background:var(--paper);border:2px solid var(--line);border-radius:20px;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:1px;box-shadow:0 4px 0 var(--line);min-width:0;transition:transform .06s}
+.slot:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.slot .ring{position:relative;width:72%;max-width:86px;aspect-ratio:1;border-radius:50%;border:2.5px dashed var(--faint);display:grid;place-items:center;margin-bottom:6px}
+.slot .no{font-size:30px;font-weight:900;color:var(--faint);line-height:1}
+.slot .nm{font-weight:900;font-size:13px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+.slot .lim{font-size:11px;color:var(--mute);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.slot .lim b{color:var(--or-d)}
+.slot.prac .ring{border-style:solid;border-color:var(--or-l);background:var(--soft2)}
+.slot.prac .no{color:var(--or)}
+.slot .pb{position:absolute;top:6px;right:6px;font-size:9.5px;font-weight:900;background:var(--ok);color:#fff;border-radius:999px;padding:0 6px;line-height:16px}
+.slot.off .ring{border-color:transparent;background:transparent}
+.slot.off .no{opacity:0}
+.slot .stamp{position:absolute;inset:-12%;width:124%;height:124%;color:var(--red);transform:rotate(-12deg)}
+.slot.wide{grid-column:1/-1;flex-direction:row;justify-content:center;gap:14px;padding:10px 14px}
+.slot.wide .ring{width:64px;margin:0}
+.slot.wide .nm{font-size:15px}
+.slot .txt{display:flex;flex-direction:column;align-items:center;min-width:0;max-width:100%}
+.slot.wide .txt{align-items:flex-start}
+.slot.next{border-color:var(--or);box-shadow:0 4px 0 var(--or-d)}
+.slot.next .ring{border-color:var(--or);animation:pulse 1.8s ease-in-out infinite}
+.slot.next::before{content:"NEXT";position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--or);color:#fff;font-size:10px;font-weight:900;letter-spacing:.12em;border-radius:999px;padding:0 8px;line-height:18px}
+@keyframes pulse{50%{transform:scale(1.07)}}
+
+.rules{padding:16px}
+.rules ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.rules li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;font-size:13.5px;font-weight:700;line-height:1.6}
+.rules li span{width:28px;height:28px;border-radius:50%;background:var(--or);color:#fff;display:grid;place-items:center;font-weight:900}
+.haiten{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;font-size:12px;font-weight:800}
+.haiten span{background:var(--soft2);border-radius:999px;padding:2px 10px;color:var(--or-d)}
+
+/* ---------- practice ---------- */
+.ph{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.ph h1{margin:0;font-size:26px;font-weight:900}
+.ph p{margin:0;color:var(--mute);font-size:12.5px;font-weight:700}
+.cont{background:linear-gradient(140deg,var(--or) 0%,var(--or-l) 100%);color:#fff;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 5px 0 var(--or-d)}
+.cont h2{margin:0;font-size:20px;font-weight:900}
+.flow{display:flex;flex-wrap:wrap;gap:3px 2px;font-size:12.5px;font-weight:700;align-items:center}
+.flow i{font-style:normal;opacity:.6;margin:0 2px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:2px solid rgba(255,255,255,.55);background:transparent;color:#fff;border-radius:999px;padding:4px 11px;font-size:13px;font-weight:800}
+.chip[aria-pressed="true"]{background:#fff;color:var(--or-d);border-color:#fff}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;background:none;border:0;padding:2px 0;color:#fff}
+.check .cb{width:20px;height:20px;border-radius:6px;border:2px solid #fff;display:grid;place-items:center;font-size:12px;line-height:1}
+.btn-go{width:100%;border:0;border-radius:16px;background:#fff;color:var(--or-d);font-weight:900;font-size:17px;padding:13px 16px;box-shadow:0 4px 0 rgba(122,46,6,.35)}
+.btn-go small{font-weight:700;font-size:12.5px;color:var(--mute);margin-left:6px}
+.btn-resume{width:100%;border:2px dashed rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:14px;padding:9px 14px;font-size:13px;font-weight:700;text-align:left}
+.single-head{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.wins{display:flex;gap:6px;flex-wrap:wrap}
+.wins button{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:800;color:var(--mute)}
+.wins button[aria-pressed="true"]{border-color:var(--or);color:var(--or-d)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{position:relative;text-align:left;border:2px solid var(--line);background:var(--paper);border-radius:18px;padding:11px 12px;display:flex;flex-direction:column;gap:1px;overflow:hidden;min-width:0;box-shadow:0 4px 0 var(--line);transition:transform .06s}
+.tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.tile .s{font-weight:900;font-size:20px;line-height:1.3;display:flex;align-items:center;gap:7px}
+.tile .s::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--acc);flex:none}
+.tile .s small{font-weight:700;font-size:11.5px;color:var(--mute)}
+.tile .f{font-size:11.5px;color:var(--mute);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .bar{height:6px;border-radius:3px;background:var(--soft);margin-top:8px;overflow:hidden}
+.tile .bar i{display:block;height:100%;background:var(--acc);border-radius:3px}
+.tile .st{font-size:11px;color:var(--mute);font-weight:700;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .done{position:absolute;right:9px;top:9px;font-size:10px;font-weight:900;color:#fff;background:var(--ok);border-radius:999px;padding:0 7px;line-height:17px}
+
+/* ---------- log ---------- */
+.bests{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.br{display:grid;grid-template-columns:6.3em minmax(0,1fr) 5.8em;gap:8px;align-items:center;font-size:12.5px;font-weight:800}
+.br .bl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.br .bl em{font-style:normal;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--or);color:#fff;font-size:11px;margin-right:4px}
+.br .bt{position:relative;height:12px;border-radius:6px;background:var(--soft)}
+.br .bt i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--or)}
+.br .bt i.ng{background:var(--faint)}
+.br .bt b{position:absolute;top:-4px;bottom:-4px;width:3px;margin-left:-1.5px;border-radius:2px;background:var(--ink)}
+.br .bv{text-align:right;font-variant-numeric:tabular-nums;color:var(--mute);white-space:nowrap}
+.br .bv.ok{color:var(--ok)}
+.legend{font-size:11.5px;color:var(--mute);font-weight:700;display:flex;gap:12px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--or);margin-right:4px;vertical-align:-1px}
+.legend b{display:inline-block;width:3px;height:12px;background:var(--ink);margin-right:5px;vertical-align:-2px;border-radius:2px}
+.recent{display:flex;flex-direction:column;overflow:hidden}
+.lrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 14px;border-top:2px solid var(--soft2)}
+.lrow:first-child{border-top:0}
+.lrow .dots{display:flex;gap:2px}
+.lrow .dots i{width:8px;height:24px;border-radius:4px;background:var(--acc)}
+.lrow .t{font-weight:900;font-size:13.5px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .d{font-size:11.5px;color:var(--mute);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{font-size:11px;font-weight:900;border-radius:999px;padding:1px 9px;white-space:nowrap}
+.badge.clear{background:var(--ok-l);color:var(--ok)}
+.badge.fail{background:var(--ng-l);color:var(--red)}
+.badge.quit{background:var(--soft);color:var(--mute)}
+.badge.over{background:#FFF3C9;color:#A9700A}
+.empty{padding:18px 14px;color:var(--mute);font-size:13px;font-weight:700}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;font-weight:700}
+.confirm button{border-radius:12px;padding:7px 12px;border:2px solid var(--line);background:var(--paper);font-size:13px;font-weight:800}
+.confirm .danger{border-color:var(--red);color:var(--red)}
+
+/* ---------- play (shared) ---------- */
+#play{position:fixed;inset:0;z-index:30;background:var(--bg);background-image:radial-gradient(var(--soft) 1.4px,transparent 1.6px);background-size:18px 18px;display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) var(--gut-r) 0 var(--gut-l);user-select:none;-webkit-user-select:none;overflow:hidden}
+.ptop{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;padding-top:10px;max-width:560px;width:100%;margin:0 auto}
+.icon{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--paper);display:grid;place-items:center;padding:0;color:var(--ink);box-shadow:0 3px 0 var(--line)}
+.icon svg{width:20px;height:20px}
+.icon:disabled{opacity:.3}
+.pmeta{text-align:center;min-width:0}
+.pmeta .mn{font-size:13.5px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--acc,var(--or))}
+.pmeta .ct{font-size:12px;font-weight:700;color:var(--mute);font-variant-numeric:tabular-nums}
+.pmeta .ct .timer{margin-left:10px}
+.progrow{max-width:560px;width:100%;margin:12px auto 0;display:flex;align-items:center;gap:10px}
+.prog{position:relative;flex:1;height:10px;border-radius:5px;background:var(--soft);display:flex;gap:2px}
+.prog>i{display:block;height:100%;background:var(--acc,var(--or));border-radius:5px;transition:width .12s ease-out}
+.prog.multi{background:transparent}
+.prog.multi b{flex:var(--n) 1 0;background:var(--soft);border-radius:5px;overflow:hidden}
+.prog.multi b i{display:block;height:100%;background:var(--c)}
+.ghost{position:absolute;top:-6px;bottom:-6px;width:4px;margin-left:-2px;border-radius:2px;background:var(--ink);opacity:.75}
+.ghost::after{content:"目安";position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-size:9.5px;font-weight:900;white-space:nowrap;color:var(--ink)}
+.ctimer{flex:none;min-width:84px;text-align:right;font-variant-numeric:tabular-nums;color:var(--or-d)}
+.ctimer b{font-size:28px;font-weight:900;line-height:1}
+.ctimer small{font-size:12px;font-weight:800;margin-left:2px}
+#play[data-state="warn"] .ctimer{color:var(--red);animation:throb .5s ease-in-out infinite alternate}
+#play[data-state="over"] .ctimer{color:var(--red)}
+@keyframes throb{to{transform:scale(1.08)}}
+
+.stage{flex:1;min-height:0;display:flex;align-items:stretch;justify-content:center;padding-block:14px}
+.card{position:relative;width:100%;max-width:560px;border-radius:30px;background:var(--paper);border:2px solid var(--line);box-shadow:0 6px 0 var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;touch-action:manipulation;overflow:hidden;padding:20px 14px}
+.card::after{content:"";position:absolute;inset:auto 0 0;height:12px;background:var(--acc)}
+.card .prev{position:absolute;top:18px;left:0;right:0;text-align:center;font-size:14px;font-weight:800;color:var(--faint);letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 16px}
+.card .num{position:absolute;bottom:26px;left:0;right:0;text-align:center;font-size:12px;font-weight:800;color:var(--mute);font-variant-numeric:tabular-nums;letter-spacing:.1em}
+.pt{font-weight:900;line-height:1;letter-spacing:.04em;font-size:min(24vw,140px,15vh);white-space:nowrap;text-align:center;color:var(--ink)}
+.pt ruby{ruby-position:over;ruby-align:center}
+.pt rt{font-weight:800;font-size:.2em;letter-spacing:.14em;color:var(--mute);padding-bottom:.28em}
+.nofuri .pt rt{visibility:hidden}
+.pt.mer{font-size:min(10.5vw,54px,8vh);letter-spacing:.04em}
+.pt.mer rt{font-size:.3em;letter-spacing:.1em}
+.card .sub{font-size:13.5px;font-weight:700;color:var(--mute);letter-spacing:.06em;text-align:center}
+.card .sub b{color:var(--acc)}
+.newtag{font-size:11px;font-weight:900;letter-spacing:.2em;color:#fff;background:var(--acc);border-radius:999px;padding:0 10px 0 12px;line-height:20px;margin-bottom:6px}
+.ring{position:absolute;inset:0;pointer-events:none;border-radius:inherit}
+.card.flash{animation:pop .16s cubic-bezier(.2,.9,.3,1.3)}
+.card.flash .pt{animation:slide .16s cubic-bezier(.2,.8,.2,1)}
+.card.back .pt{animation:slideb .16s cubic-bezier(.2,.8,.2,1)}
+.card.flash .ring{animation:ringok .3s ease-out}
+.card.miss{animation:shake .28s ease-out}
+.card.miss .ring{animation:ringng .45s ease-out}
+@keyframes pop{from{transform:scale(.97)}to{transform:none}}
+@keyframes slide{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes slideb{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+@keyframes ringok{from{box-shadow:inset 0 0 0 6px var(--acc)}to{box-shadow:inset 0 0 0 0 var(--acc)}}
+@keyframes ringng{from{box-shadow:inset 0 0 0 7px var(--red)}to{box-shadow:inset 0 0 0 0 var(--red)}}
+@keyframes shake{20%{transform:translateX(-7px)}50%{transform:translateX(6px)}80%{transform:translateX(-3px)}}
+.pbot{max-width:560px;width:100%;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
+.btn-ng{border:2px solid var(--red);color:var(--red);background:var(--paper);border-radius:18px;padding:14px 8px;font-weight:900;font-size:15px;box-shadow:0 4px 0 #F6B7AC}
+.btn-ng:disabled{opacity:.3}
+.btn-ok{border:0;background:var(--acc,var(--or));color:#fff;border-radius:18px;padding:14px 8px;font-weight:900;font-size:15px;box-shadow:0 4px 0 rgba(58,36,24,.25)}
+.btn-ng:active,.btn-ok:active{transform:translateY(3px);box-shadow:none}
+
+/* ---------- oral timer ---------- */
+.omain{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;max-width:560px;width:100%;margin:0 auto;padding-block:8px}
+.timer-wrap{position:relative;width:min(70vw,290px,38vh);aspect-ratio:1}
+.tring{width:100%;height:100%;transform:rotate(-90deg)}
+.tring circle{fill:none;stroke-width:18}
+.tring .trk{stroke:var(--soft)}
+.tring .arc{stroke:var(--or);stroke-linecap:round;stroke-dasharray:1000;transition:stroke .2s}
+#play[data-state="warn"] .tring .arc{stroke:var(--red)}
+#play[data-state="over"] .tring .trk{stroke:#F9C9C0}
+.tnum{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.tnum b{font-size:min(15vw,66px,9vh);font-weight:900;line-height:1;color:var(--ink)}
+.tnum span{font-size:13px;font-weight:800;color:var(--mute);margin-top:4px}
+#play[data-state="warn"] .tnum b,#play[data-state="over"] .tnum b{color:var(--red)}
+#play[data-state="warn"] .timer-wrap{animation:throb .5s ease-in-out infinite alternate}
+.tmascot{position:absolute;right:-8%;bottom:-6%;width:30%}
+.pace{font-size:13px;font-weight:800;color:var(--mute);background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:3px 14px;font-variant-numeric:tabular-nums}
+.pace.fast{color:var(--ok);border-color:#A9E2C6}
+.pace.slow{color:var(--red);border-color:#F6B7AC}
+.laps{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.lp{border-radius:999px;padding:3px 11px;background:var(--paper);border:2px solid var(--line);font-weight:900;font-size:13px;color:var(--faint);display:inline-flex;align-items:center;gap:4px;transition:transform .12s}
+.lp em{font-style:normal;font-size:10.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.lp.cur{border-color:var(--c);color:var(--ink);background:color-mix(in srgb,var(--c) 16%,#fff);transform:scale(1.12)}
+.lp.done{background:var(--c);border-color:var(--c);color:#fff}
+.laps.nums .lp{width:30px;height:30px;padding:0;justify-content:center;font-size:12px}
+.laps.nums .lp em{display:none}
+.cue{margin:0;font-size:13px;font-weight:800;color:var(--or-d);text-align:center}
+.obot{max-width:560px;width:100%;margin:0 auto;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
+.btn-give{border:2px solid var(--line);background:var(--paper);color:var(--mute);border-radius:20px;padding:0 14px;font-weight:800;font-size:13px;box-shadow:0 4px 0 var(--line)}
+.btn-lap{border:0;background:var(--or);color:#fff;border-radius:22px;min-height:84px;padding:10px 14px;font-weight:900;font-size:19px;line-height:1.3;box-shadow:0 6px 0 var(--or-d);transition:transform .05s,box-shadow .05s}
+.btn-lap small{display:block;font-size:12px;font-weight:800;opacity:.85}
+.btn-lap:active{transform:translateY(4px);box-shadow:0 2px 0 var(--or-d)}
+.btn-lap.stop{background:var(--red);box-shadow:0 6px 0 #B52D1B}
+
+/* ---------- countdown / overlays ---------- */
+.cd{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--or) 94%,transparent);display:grid;place-items:center;color:#fff}
+.cd span{font-size:min(44vw,190px);font-weight:900;line-height:1;animation:cdpop .6s cubic-bezier(.2,1.4,.4,1) both;text-shadow:0 6px 0 var(--or-d)}
+.cd span.go{font-size:min(15vw,70px)}
+@keyframes cdpop{from{transform:scale(2);opacity:0}30%{opacity:1}to{transform:scale(1)}}
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(58,36,24,.42);display:flex;align-items:flex-end;justify-content:center;animation:fade .15s}
+@keyframes fade{from{opacity:0}}
+.sheet{width:100%;max-width:560px;max-height:90%;overflow-y:auto;background:var(--paper);border-radius:28px 28px 0 0;padding:10px var(--gut-r) max(20px,env(safe-area-inset-bottom,0px)) var(--gut-l);display:flex;flex-direction:column;gap:14px;animation:up .22s cubic-bezier(.2,.8,.2,1)}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 2px}
+@keyframes up{from{transform:translateY(50px);opacity:0}}
+.sheet h3{margin:0;font-size:24px;font-weight:900;line-height:1.3}
+.actions{display:flex;flex-direction:column;gap:10px}
+.actions.row{flex-direction:row}
+.actions.row>*{flex:1}
+.sg-head{display:flex;gap:12px;align-items:center}
+.sg-no{flex:none;width:62px;height:62px;border-radius:50%;background:var(--or);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;font-weight:900;line-height:1;box-shadow:0 4px 0 var(--or-d)}
+.sg-no small{font-size:10px;font-weight:800;margin-top:2px}
+.sg-sub{margin:2px 0 0;font-size:12.5px;font-weight:700;color:var(--mute)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.facts div{background:var(--soft2);border-radius:14px;padding:8px 4px;text-align:center;font-size:10.5px;font-weight:800;color:var(--mute)}
+.facts b{display:block;font-size:21px;font-weight:900;color:var(--or-d);line-height:1.2;font-variant-numeric:tabular-nums}
+.facts b small{font-size:11px;margin-left:1px}
+.mystat{font-size:12.5px;font-weight:800;color:var(--mute);text-align:center}
+.official{display:flex;align-items:center;gap:12px;border:2px dashed var(--line);border-radius:18px;padding:10px 12px;font-size:12.5px;font-weight:700;color:var(--mute)}
+.official b{display:block;color:var(--ink);font-size:14px}
+.official .grow{flex:1;min-width:0}
+.official .off-stamp{flex:none;width:64px;color:var(--red)}
+.official .off-stamp .stamp{transform:rotate(-12deg)}
+.btn-off{flex:none;border:2px solid var(--red);color:var(--red);background:var(--paper);border-radius:14px;padding:8px 10px;font-weight:900;font-size:13px}
+.official.on{border-style:solid;border-color:#F6B7AC;background:#FFF6F3}
+.stamp text{font-family:var(--f)}
+
+.selfcheck{text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.bigtime{font-size:15px;font-weight:800;color:var(--mute);font-variant-numeric:tabular-nums}
+.bigtime b{font-size:56px;font-weight:900;color:var(--ink);line-height:1}
+.bigtime.over b{color:var(--red)}
+.rr{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
+.rr .stampbox{width:150px;color:var(--red);animation:slam .42s cubic-bezier(.2,1.5,.4,1) both}
+.rr .stampbox .stamp{transform:rotate(-12deg)}
+.rr .mas{width:96px}
+.rr h3{font-size:30px}
+.rr h3.ok{color:var(--ok)}
+.rr p{margin:0;font-size:14px;font-weight:700;color:var(--mute)}
+.rr p b{color:var(--ink)}
+.best-badge{background:var(--yel);color:var(--ink);font-weight:900;font-size:12px;border-radius:999px;padding:2px 12px;animation:pop .4s .3s both}
+@keyframes slam{from{transform:scale(2.4) rotate(-25deg);opacity:0}to{transform:none;opacity:1}}
+.split{display:flex;flex-direction:column;gap:7px}
+.split .label span{font-weight:700;letter-spacing:0}
+.sr{display:grid;grid-template-columns:3.6em minmax(0,1fr) 3.8em;gap:8px;align-items:center;font-size:12.5px;font-weight:800}
+.sr .sb{position:relative;height:12px;border-radius:6px;background:var(--soft)}
+.sr .sb i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--c)}
+.sr .sb b{position:absolute;top:-4px;bottom:-4px;width:3px;margin-left:-1.5px;border-radius:2px;background:var(--ink)}
+.sr .sd{text-align:right;font-variant-numeric:tabular-nums}
+.sr .sd.fast{color:var(--ok)}
+.sr .sd.slow{color:var(--red)}
+.chain{display:flex;flex-wrap:wrap;gap:5px}
+.chain span{font-weight:800;font-size:13.5px;border-radius:8px;padding:2px 8px;background:var(--soft2)}
+.chain span.no{background:var(--ng-l);color:var(--red);border:2px solid var(--red)}
+.chain span.rest{background:transparent;color:var(--faint);border:1.5px dashed var(--line)}
+.mer-line{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12.5px;font-weight:800}
+.mer-line span{display:flex;align-items:center;gap:5px}
+.mer-line i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.mer-line .x{color:var(--red)}
+.mer-line .n{color:var(--faint)}
+.stats{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;font-weight:700;color:var(--mute)}
+.stats b{display:block;font-size:22px;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.25}
+.slamwrap{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(58,36,24,.3);animation:fade .15s;pointer-events:none}
+.slamwrap>div{width:min(62vw,260px);color:var(--red);animation:slam .4s cubic-bezier(.2,1.5,.4,1) both}
+.slamwrap .stamp{transform:rotate(-12deg)}
+.slamwrap.out{animation:fade .3s reverse forwards}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;font-weight:800;padding:9px 16px;border-radius:999px;font-size:13px;z-index:80;animation:fade .15s;white-space:nowrap}
+.confetti{position:fixed;inset:0;width:100%;height:100%;z-index:75;pointer-events:none}
+.tsubo{display:block;width:100%;height:auto;overflow:visible}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="ink" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<div id="shell">
+  <main id="views">
+    <section id="v-rally" class="view" aria-label="スタンプラリー"></section>
+    <section id="v-prac" class="view" aria-label="練習" hidden></section>
+    <section id="v-log" class="view" aria-label="記録" hidden></section>
+  </main>
+  <nav class="tabbar" id="tabbar" aria-label="画面切り替え"></nav>
+</div>
+<div id="play" hidden></div>
+
+<script>
+// ===== 経穴データ（流注順・WHO標準／教科書準拠 361穴） =====
+const RAW = [
+ ["LU","手の太陰肺経","てのたいいんはいけい","肺経","metal",
+  "中府:ちゅうふ 雲門:うんもん 天府:てんぷ 侠白:きょうはく 尺沢:しゃくたく 孔最:こうさい 列欠:れっけつ 経渠:けいきょ 太淵:たいえん 魚際:ぎょさい 少商:しょうしょう"],
+ ["LI","手の陽明大腸経","てのようめいだいちょうけい","大腸経","metal",
+  "商陽:しょうよう 二間:じかん 三間:さんかん 合谷:ごうこく 陽渓:ようけい 偏歴:へんれき 温溜:おんる 下廉:げれん 上廉:じょうれん 手三里:てのさんり 曲池:きょくち 肘髎:ちゅうりょう 手五里:てのごり 臂臑:ひじゅ 肩髃:けんぐう 巨骨:ここつ 天鼎:てんてい 扶突:ふとつ 禾髎:かりょう 迎香:げいこう"],
+ ["ST","足の陽明胃経","あしのようめいいけい","胃経","earth",
+  "承泣:しょうきゅう 四白:しはく 巨髎:こりょう 地倉:ちそう 大迎:だいげい 頬車:きょうしゃ 下関:げかん 頭維:ずい 人迎:じんげい 水突:すいとつ 気舎:きしゃ 欠盆:けつぼん 気戸:きこ 庫房:こぼう 屋翳:おくえい 膺窓:ようそう 乳中:にゅうちゅう 乳根:にゅうこん 不容:ふよう 承満:しょうまん 梁門:りょうもん 関門:かんもん 太乙:たいいつ 滑肉門:かつにくもん 天枢:てんすう 外陵:がいりょう 大巨:だいこ 水道:すいどう 帰来:きらい 気衝:きしょう 髀関:ひかん 伏兎:ふくと 陰市:いんし 梁丘:りょうきゅう 犢鼻:とくび 足三里:あしのさんり 上巨虚:じょうこきょ 条口:じょうこう 下巨虚:げこきょ 豊隆:ほうりゅう 解渓:かいけい 衝陽:しょうよう 陥谷:かんこく 内庭:ないてい 厲兌:れいだ"],
+ ["SP","足の太陰脾経","あしのたいいんひけい","脾経","earth",
+  "隠白:いんぱく 大都:だいと 太白:たいはく 公孫:こうそん 商丘:しょうきゅう 三陰交:さんいんこう 漏谷:ろうこく 地機:ちき 陰陵泉:いんりょうせん 血海:けっかい 箕門:きもん 衝門:しょうもん 府舎:ふしゃ 腹結:ふっけつ 大横:だいおう 腹哀:ふくあい 食竇:しょくとく 天渓:てんけい 胸郷:きょうきょう 周栄:しゅうえい 大包:だいほう"],
+ ["HT","手の少陰心経","てのしょういんしんけい","心経","fire",
+  "極泉:きょくせん 青霊:せいれい 少海:しょうかい 霊道:れいどう 通里:つうり 陰郄:いんげき 神門:しんもん 少府:しょうふ 少衝:しょうしょう"],
+ ["SI","手の太陽小腸経","てのたいようしょうちょうけい","小腸経","fire",
+  "少沢:しょうたく 前谷:ぜんこく 後渓:こうけい 腕骨:わんこつ 陽谷:ようこく 養老:ようろう 支正:しせい 小海:しょうかい 肩貞:けんてい 臑兪:じゅゆ 天宗:てんそう 秉風:へいふう 曲垣:きょくえん 肩外兪:けんがいゆ 肩中兪:けんちゅうゆ 天窓:てんそう 天容:てんよう 顴髎:けんりょう 聴宮:ちょうきゅう"],
+ ["BL","足の太陽膀胱経","あしのたいようぼうこうけい","膀胱経","water",
+  "睛明:せいめい 攅竹:さんちく 眉衝:びしょう 曲差:きょくさ 五処:ごしょ 承光:しょうこう 通天:つうてん 絡却:らっきゃく 玉枕:ぎょくちん 天柱:てんちゅう 大杼:だいじょ 風門:ふうもん 肺兪:はいゆ 厥陰兪:けついんゆ 心兪:しんゆ 督兪:とくゆ 膈兪:かくゆ 肝兪:かんゆ 胆兪:たんゆ 脾兪:ひゆ 胃兪:いゆ 三焦兪:さんしょうゆ 腎兪:じんゆ 気海兪:きかいゆ 大腸兪:だいちょうゆ 関元兪:かんげんゆ 小腸兪:しょうちょうゆ 膀胱兪:ぼうこうゆ 中膂兪:ちゅうりょゆ 白環兪:はっかんゆ 上髎:じょうりょう 次髎:じりょう 中髎:ちゅうりょう 下髎:げりょう 会陽:えよう 承扶:しょうふ 殷門:いんもん 浮郄:ふげき 委陽:いよう 委中:いちゅう 附分:ふぶん 魄戸:はっこ 膏肓:こうこう 神堂:しんどう 譩譆:いき 膈関:かくかん 魂門:こんもん 陽綱:ようこう 意舎:いしゃ 胃倉:いそう 肓門:こうもん 志室:ししつ 胞肓:ほうこう 秩辺:ちっぺん 合陽:ごうよう 承筋:しょうきん 承山:しょうざん 飛揚:ひよう 跗陽:ふよう 崑崙:こんろん 僕参:ぼくしん 申脈:しんみゃく 金門:きんもん 京骨:けいこつ 束骨:そっこつ 足通谷:あしのつうこく 至陰:しいん"],
+ ["KI","足の少陰腎経","あしのしょういんじんけい","腎経","water",
+  "湧泉:ゆうせん 然谷:ねんこく 太渓:たいけい 大鍾:だいしょう 水泉:すいせん 照海:しょうかい 復溜:ふくりゅう 交信:こうしん 築賓:ちくひん 陰谷:いんこく 横骨:おうこつ 大赫:だいかく 気穴:きけつ 四満:しまん 中注:ちゅうちゅう 肓兪:こうゆ 商曲:しょうきょく 石関:せきかん 陰都:いんと 腹通谷:はらのつうこく 幽門:ゆうもん 歩廊:ほろう 神封:しんぽう 霊墟:れいきょ 神蔵:しんぞう 彧中:いくちゅう 兪府:ゆふ"],
+ ["PC","手の厥陰心包経","てのけっちんしんぽうけい","心包経","fire",
+  "天池:てんち 天泉:てんせん 曲沢:きょくたく 郄門:げきもん 間使:かんし 内関:ないかん 大陵:だいりょう 労宮:ろうきゅう 中衝:ちゅうしょう"],
+ ["TE","手の少陽三焦経","てのしょうようさんしょうけい","三焦経","fire",
+  "関衝:かんしょう 液門:えきもん 中渚:ちゅうしょ 陽池:ようち 外関:がいかん 支溝:しこう 会宗:えそう 三陽絡:さんようらく 四瀆:しとく 天井:てんせい 清冷淵:せいれいえん 消濼:しょうれき 臑会:じゅえ 肩髎:けんりょう 天髎:てんりょう 天牖:てんゆう 翳風:えいふう 瘈脈:けいみゃく 顱息:ろそく 角孫:かくそん 耳門:じもん 和髎:わりょう 糸竹空:しちくくう"],
+ ["GB","足の少陽胆経","あしのしょうようたんけい","胆経","wood",
+  "瞳子髎:どうしりょう 聴会:ちょうえ 上関:じょうかん 頷厭:がんえん 懸顱:けんろ 懸釐:けんり 曲鬢:きょくびん 率谷:そっこく 天衝:てんしょう 浮白:ふはく 頭竅陰:あたまのきょういん 完骨:かんこつ 本神:ほんじん 陽白:ようはく 頭臨泣:あたまのりんきゅう 目窓:もくそう 正営:しょうえい 承霊:しょうれい 脳空:のうくう 風池:ふうち 肩井:けんせい 淵腋:えんえき 輒筋:ちょうきん 日月:じつげつ 京門:けいもん 帯脈:たいみゃく 五枢:ごすう 維道:いどう 居髎:きょりょう 環跳:かんちょう 風市:ふうし 中瀆:ちゅうとく 膝陽関:ひざのようかん 陽陵泉:ようりょうせん 陽交:ようこう 外丘:がいきゅう 光明:こうめい 陽輔:ようほ 懸鍾:けんしょう 丘墟:きゅうきょ 足臨泣:あしのりんきゅう 地五会:ちごえ 侠渓:きょうけい 足竅陰:あしのきょういん"],
+ ["LR","足の厥陰肝経","あしのけっちんかんけい","肝経","wood",
+  "大敦:だいとん 行間:こうかん 太衝:たいしょう 中封:ちゅうほう 蠡溝:れいこう 中都:ちゅうと 膝関:しつかん 曲泉:きょくせん 陰包:いんぽう 足五里:あしのごり 陰廉:いんれん 急脈:きゅうみゃく 章門:しょうもん 期門:きもん"],
+ ["GV","督脈","とくみゃく","督脈","gov",
+  "長強:ちょうきょう 腰兪:ようゆ 腰陽関:こしのようかん 命門:めいもん 懸枢:けんすう 脊中:せきちゅう 中枢:ちゅうすう 筋縮:きんしゅく 至陽:しよう 霊台:れいだい 神道:しんどう 身柱:しんちゅう 陶道:とうどう 大椎:だいつい 瘂門:あもん 風府:ふうふ 脳戸:のうこ 強間:きょうかん 後頂:ごちょう 百会:ひゃくえ 前頂:ぜんちょう 顖会:しんえ 上星:じょうせい 神庭:しんてい 素髎:そりょう 水溝:すいこう 兌端:だたん 齦交:ぎんこう"],
+ ["CV","任脈","にんみゃく","任脈","conc",
+  "会陰:えいん 曲骨:きょっこつ 中極:ちゅうきょく 関元:かんげん 石門:せきもん 気海:きかい 陰交:いんこう 神闕:しんけつ 水分:すいぶん 下脘:げかん 建里:けんり 中脘:ちゅうかん 上脘:じょうかん 巨闕:こけつ 鳩尾:きゅうび 中庭:ちゅうてい 膻中:だんちゅう 玉堂:ぎょくどう 紫宮:しきゅう 華蓋:かがい 璇璣:せんき 天突:てんとつ 廉泉:れんせん 承漿:しょうしょう"]
+];
+const M = RAW.map(([id,name,yomi,short,el,pts])=>({id,name,yomi,short,el,
+  pts:pts.split(/\s+/).map(s=>{const [n,y]=s.split(":");return {n,y};})}));
+const MI = Object.fromEntries(M.map(m=>[m.id,m]));
+const FLOW = M.slice(0,12).map(m=>m.id);   // 流注順12経
+const CVGV = ["GV","CV"];
+
+// ===== スタンプラリー 2年生特別バージョン（肺経〜肝経） =====
+const STAGES=[
+  {n:1,label:"十二経脈の正式名称",short:"正式名称",upto:null,limit:40,pt:2,cum:2},
+  {n:2,label:"肺経",short:"肺経",upto:"LU",limit:10,pt:3,cum:5},
+  {n:3,label:"大腸経まで",short:"大腸経まで",upto:"LI",limit:25,pt:5,cum:10},
+  {n:4,label:"胃経まで",short:"胃経まで",upto:"ST",limit:60,pt:5,cum:15},
+  {n:5,label:"脾経まで",short:"脾経まで",upto:"SP",limit:75,pt:5,cum:20},
+  {n:6,label:"心経まで",short:"心経まで",upto:"HT",limit:85,pt:5,cum:25},
+  {n:7,label:"小腸経まで",short:"小腸経まで",upto:"SI",limit:100,pt:5,cum:30},
+  {n:8,label:"膀胱経まで",short:"膀胱経まで",upto:"BL",limit:150,pt:5,cum:35},
+  {n:9,label:"腎経まで",short:"腎経まで",upto:"KI",limit:170,pt:5,cum:40},
+  // 2年生特別：1年生の表と同じ「1穴 約0.78秒・5秒刻み」で延長
+  {n:10,label:"心包経まで",short:"心包経まで",upto:"PC",limit:180,pt:5,cum:45},
+  {n:11,label:"三焦経まで",short:"三焦経まで",upto:"TE",limit:195,pt:5,cum:50},
+  {n:12,label:"胆経まで",short:"胆経まで",upto:"GB",limit:230,pt:5,cum:55},
+  {n:13,label:"肝経まで",short:"肝経まで",upto:"LR",limit:240,pt:5,cum:60},
+];
+const MAXPT=STAGES.reduce((a,s)=>a+s.pt,0), NST=STAGES.length;
+const PERIOD={from:new Date(2026,10,19),to:new Date(2027,1,26,23,59,59)};
+const stIds=st=>st.upto?FLOW.slice(0,FLOW.indexOf(st.upto)+1):[];
+const stCount=st=>st.upto?stIds(st).reduce((a,id)=>a+MI[id].pts.length,0):12;
+const stUnit=st=>st.upto?"穴":"経";
+
+// ===== 保存（この端末のブラウザ内のみ） =====
+const KEY="keiketsu-anshou-2nen-v1";   // 1年生版と保存場所を分ける
+let store={logs:[],furi:true,sound:true,contFrom:"LU",contExtra:false,single:"flow",win:0,official:{},tab:"rally",rstyle:"oral"};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)store=Object.assign(store,s);}catch(e){}
+if(!store.official||typeof store.official!=="object")store.official={};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+
+// ===== 小道具 =====
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const col=id=>`var(--${MI[id].el})`;
+const ruby=(n,y)=>`<ruby>${esc(n)}<rt>${esc(y)}</rt></ruby>`;
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const fmt=sec=>{sec=Math.max(0,Math.round(sec));return `${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}`;};
+const fmtS=sec=>sec<60?`${sec.toFixed(1)}秒`:`${Math.floor(sec/60)}分${(sec%60).toFixed(1).padStart(4,"0")}秒`;
+const fmtDate=t=>{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;};
+const fmtDay=t=>{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()}`;};
+const reduced=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){return false;}};
+function buzz(ms){try{navigator.vibrate&&navigator.vibrate(ms);}catch(e){}}
+function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1900);}
+
+const ICON={
+  x:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>`,
+  undo:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4L3.5 8.5 8 13" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 8.5h10a6 6 0 0 1 0 12h-3" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  snd:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9h4l5-4v14l-5-4h-4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.6 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  mute:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9h4l5-4v14l-5-4h-4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  stamp:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2.3"/><circle cx="12" cy="12" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M9.4 12.2l1.9 1.9 3.4-3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  cards:`<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3.5" width="12.5" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M4.5 7.5v10a3 3 0 0 0 3 3h8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>`,
+  chart:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V12M10 20V6M15 20v-9M20 20V9" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>`,
+};
+
+// ツボ（壺）ちゃん：鍼が1本刺さった壺のマスコット
+function tsubo(mood="normal"){
+  const K="#3A2418";
+  const eyes={
+    normal:`<circle cx="42" cy="60" r="4.3" fill="${K}"/><circle cx="58" cy="60" r="4.3" fill="${K}"/><circle cx="43.4" cy="58.5" r="1.5" fill="#fff"/><circle cx="59.4" cy="58.5" r="1.5" fill="#fff"/>`,
+    happy:`<path d="M37.5 61q4.5-6.5 9 0M53.5 61q4.5-6.5 9 0" stroke="${K}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`,
+    panic:`<circle cx="42" cy="59" r="5.4" fill="#fff" stroke="${K}" stroke-width="2"/><circle cx="58" cy="59" r="5.4" fill="#fff" stroke="${K}" stroke-width="2"/><circle cx="42" cy="60" r="2.2" fill="${K}"/><circle cx="58" cy="60" r="2.2" fill="${K}"/>`,
+    sad:`<path d="M37.5 57.5l8 3.5M62.5 57.5l-8 3.5" stroke="${K}" stroke-width="3.2" stroke-linecap="round"/>`,
+  }[mood];
+  const mouth={
+    normal:`<path d="M45.5 67.5q4.5 4.5 9 0" stroke="${K}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`,
+    happy:`<path d="M43.5 66h13q-1 9-6.5 9t-6.5-9z" fill="${K}"/><path d="M46.5 72.5q3.5-3 7 0q-1.5 2.4-3.5 2.4t-3.5-2.4z" fill="#FF7F6E"/>`,
+    panic:`<ellipse cx="50" cy="70" rx="3.6" ry="4.6" fill="${K}"/>`,
+    sad:`<path d="M45 72q5-5 10 0" stroke="${K}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`,
+  }[mood];
+  const extra=mood==="panic"?`<path d="M78 36q6 9 0 12.5q-6-3.5 0-12.5z" fill="#7CC4FF"/>`
+    :mood==="happy"?`<path d="M84 30l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#FFC83D"/><path d="M14 44l1.4 3.4 3.4 1.4-3.4 1.4-1.4 3.4-1.4-3.4-3.4-1.4 3.4-1.4z" fill="#FFC83D"/>`
+    :mood==="sad"?`<path d="M30 46q4-3 8 0" stroke="#9BB8D6" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/>`:"";
+  return `<svg class="tsubo" viewBox="0 0 100 100" role="img" aria-label="ツボちゃん">
+    <line x1="59" y1="21" x2="71" y2="4" stroke="#8F7363" stroke-width="2.2" stroke-linecap="round"/><rect x="67.5" y="-1" width="7" height="8" rx="2.4" transform="rotate(35 71 3)" fill="#FFC83D" stroke="#8F7363" stroke-width="1.4"/>
+    <path d="M32 27C15 41 13 72 29 86c11 9 31 9 42 0c16-14 14-45-3-59z" fill="#F26A1B"/>
+    <path d="M31 33c-7 9-9 21-7 31" stroke="#FFB37A" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M29 84c12 8 30 8 42 0" stroke="#D4520A" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
+    <rect x="27" y="17" width="46" height="13" rx="6.5" fill="#D4520A"/><ellipse cx="50" cy="19.5" rx="17" ry="3.2" fill="#7A2E06" opacity=".55"/>
+    <ellipse cx="33.5" cy="69" rx="5.2" ry="3.2" fill="#FF8F7A" opacity=".85"/><ellipse cx="66.5" cy="69" rx="5.2" ry="3.2" fill="#FF8F7A" opacity=".85"/>
+    ${eyes}${mouth}${extra}</svg>`;
+}
+// 朱肉スタンプ
+function stampSVG(main,top,bottom){
+  const fs=main.length>2?24:32;
+  return `<svg class="stamp" viewBox="0 0 120 120" aria-hidden="true"><g filter="url(#ink)" fill="currentColor">
+    <circle cx="60" cy="60" r="53" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="60" cy="60" r="44" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="60" y="38" text-anchor="middle" font-size="12" font-weight="900">${esc(top)}</text>
+    <line x1="23" y1="45" x2="97" y2="45" stroke="currentColor" stroke-width="1.6"/>
+    <text x="60" y="${fs>30?75:72}" text-anchor="middle" font-size="${fs}" font-weight="900">${esc(main)}</text>
+    <line x1="23" y1="82" x2="97" y2="82" stroke="currentColor" stroke-width="1.6"/>
+    <text x="60" y="96" text-anchor="middle" font-size="11.5" font-weight="900">${esc(bottom)}</text></g></svg>`;
+}
+
+// ===== 効果音（すべてその場で合成） =====
+let AC=null,NOISE=null;
+function ac(){
+  try{
+    if(!AC){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;AC=new C();
+      const len=Math.floor(AC.sampleRate*0.3);NOISE=AC.createBuffer(1,len,AC.sampleRate);
+      const d=NOISE.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;}
+    if(AC.state==="suspended")AC.resume();
+    return AC;
+  }catch(e){return null;}
+}
+function swish(){  // 「サッ」
+  if(!store.sound)return;const c=ac();if(!c)return;
+  try{
+    const t=c.currentTime+0.002,v=0.88+Math.random()*0.24;
+    const src=c.createBufferSource();src.buffer=NOISE;
+    const bp=c.createBiquadFilter();bp.type="bandpass";bp.Q.value=1.4;
+    bp.frequency.setValueAtTime(1100*v,t);bp.frequency.exponentialRampToValueAtTime(5200*v,t+0.075);bp.frequency.exponentialRampToValueAtTime(3200*v,t+0.13);
+    const hp=c.createBiquadFilter();hp.type="highpass";hp.frequency.value=600;
+    const g=c.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.55,t+0.018);g.gain.exponentialRampToValueAtTime(0.0001,t+0.13);
+    src.connect(bp);bp.connect(hp);hp.connect(g);g.connect(c.destination);src.start(t);src.stop(t+0.15);
+  }catch(e){}
+}
+function tone(freq,dur,type="sine",vol=.25,when=0,slide){
+  if(!store.sound)return;const c=ac();if(!c)return;
+  try{
+    const t=c.currentTime+0.005+when,o=c.createOscillator(),g=c.createGain();
+    o.type=type;o.frequency.setValueAtTime(freq,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+0.012);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+0.03);
+  }catch(e){}
+}
+const sfx={
+  beep:()=>tone(660,.13,"triangle",.32),
+  go:()=>{tone(990,.3,"triangle",.32);tone(1320,.3,"sine",.12,.04);},
+  tick:()=>tone(1300,.05,"square",.05),
+  pop:()=>tone(480,.1,"sine",.4,0,1000),
+  pon:()=>{tone(190,.25,"sine",.7,0,60);tone(2400,.03,"square",.05);},
+  fanfare:()=>[523,659,784,1047].forEach((f,i)=>tone(f,i===3?.5:.16,"triangle",.26,i*.11)),
+  over:()=>tone(150,.4,"square",.12,0,110),
+  sad:()=>{tone(392,.18,"triangle",.22);tone(311,.36,"triangle",.22,.17);},
+};
+["touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,()=>{if(store.sound)ac();},{passive:true}));
+
+let wake=null;
+async function keepAwake(){try{if(navigator.wakeLock)wake=await navigator.wakeLock.request("screen");}catch(e){}}
+function releaseAwake(){try{wake&&wake.release();}catch(e){}wake=null;}
+
+function confetti(){
+  if(reduced())return;
+  const c=document.createElement("canvas");c.className="confetti";document.body.appendChild(c);
+  const W=innerWidth,H=innerHeight,dpr=Math.min(2,devicePixelRatio||1);c.width=W*dpr;c.height=H*dpr;
+  const g=c.getContext("2d");g.scale(dpr,dpr);
+  const cols=["#F26A1B","#FFC83D","#E5402B","#33A866","#FF9F55","#3D6FD6","#D2559A"];
+  const P=Array.from({length:140},()=>({x:W/2+(Math.random()-.5)*W*.3,y:H*.38,vx:(Math.random()-.5)*11,vy:-Math.random()*12-4,r:Math.random()*6,vr:(Math.random()-.5)*.35,w:6+Math.random()*7,h:4+Math.random()*5,c:cols[Math.random()*cols.length|0],round:Math.random()<.3}));
+  const t0=performance.now();
+  (function f(t){const k=(t-t0)/1000;g.clearRect(0,0,W,H);
+    for(const p of P){p.vy+=.32;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;g.save();g.translate(p.x,p.y);g.rotate(p.r);g.globalAlpha=Math.max(0,1-k/2.4);g.fillStyle=p.c;
+      if(p.round){g.beginPath();g.arc(0,0,p.h/1.6,0,7);g.fill();}else g.fillRect(-p.w/2,-p.h/2,p.w,p.h);g.restore();}
+    if(k<2.4)requestAnimationFrame(f);else c.remove();})(t0);
+}
+function slam(svg){
+  const d=document.createElement("div");d.className="slamwrap";d.innerHTML=`<div>${svg}</div>`;document.body.appendChild(d);
+  setTimeout(()=>{sfx.pon();buzz(45);},120);
+  setTimeout(()=>d.classList.add("out"),1200);setTimeout(()=>d.remove(),1550);
+}
+
+// ===== シート =====
+function openSheet(html,lock=false){
+  closeSheet();
+  const sc=document.createElement("div");sc.className="scrim";sc.id="scrim";
+  sc.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
+  if(!lock)sc.addEventListener("click",e=>{if(e.target===sc)closeSheet();});
+  document.body.appendChild(sc);
+  setTimeout(()=>{const b=sc.querySelector(".btn-p");b&&b.focus({preventScroll:true});},60);
+  return sc;
+}
+function closeSheet(){const s=$("#scrim");if(s)s.remove();}
+
+// ===== タブ =====
+function setTab(t){
+  store.tab=t;save();
+  for(const v of ["rally","prac","log"])$("#v-"+v).hidden=v!==t;
+  $$("#tabbar button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===t?"page":"false"));
+  render();$("#v-"+t).scrollTop=0;
+}
+function render(){
+  document.body.classList.toggle("nofuri",!store.furi);
+  if(store.tab==="prac")renderPrac();else if(store.tab==="log")renderLog();else renderRally();
+}
+function toggles(){
+  return `<div class="toggles"><button class="pill-toggle" data-tg="sound" aria-pressed="${store.sound}"><span class="dot"></span>効果音</button><button class="pill-toggle" data-tg="furi" aria-pressed="${store.furi}"><span class="dot"></span>ふりがな</button></div>`;
+}
+function bindToggles(root){
+  $$("[data-tg]",root).forEach(b=>b.onclick=()=>{const k=b.dataset.tg;store[k]=!store[k];save();if(k==="sound"&&store.sound)swish();render();});
+}
+
+// ===== スタンプラリー画面 =====
+function periodInfo(){
+  const now=new Date(),day=864e5;
+  if(now<PERIOD.from){const d=Math.ceil((PERIOD.from-now)/day);return {label:d<=1?"あすスタート！":`開始まであと${d}日`,before:true,tomorrow:d<=1};}
+  if(now<=PERIOD.to)return {label:`のこり${Math.ceil((PERIOD.to-now)/day)}日`,before:false};
+  return {label:"期間終了",before:false,ended:true};
+}
+function stStat(n){
+  const ls=store.logs.filter(l=>l.mode==="rally"&&l.stage===n);
+  const cl=ls.filter(l=>l.status==="clear");
+  return {tries:ls.length,clears:cl.length,best:cl.length?Math.min(...cl.map(l=>l.sec)):null,last:ls[0]||null};
+}
+function renderRally(){
+  const P=periodInfo();
+  const score=sum(STAGES.filter(s=>store.official[s.n]).map(s=>s.pt));
+  const offN=STAGES.filter(s=>store.official[s.n]).length;
+  const pracN=STAGES.filter(s=>stStat(s.n).clears>0).length;
+  const nx=STAGES.find(s=>!store.official[s.n]);
+  let msg,mood="normal";
+  if(!nx){msg=`全${NST}段階コンプリート！<b>${MAXPT}点満点</b>おめでとう〜！`;mood="happy";}
+  else{const cnt=stCount(nx);
+    msg=`次は<b>第${nx.n}段階「${nx.label}」</b>。${cnt}${stUnit(nx)}を${nx.limit}秒、1つ<b>${(nx.limit/cnt).toFixed(2)}秒</b>ペースだよ`;
+    if(stStat(nx.n).clears)msg+="。練習はクリア済み、本番もいける！";}
+  $("#v-rally").innerHTML=`<div class="wrap">
+    <header class="hero">
+      <div class="hero-meta"><span class="tag">2年生特別バージョン</span><span class="period">肺経 → 肝経<b>全12経 309穴</b></span></div>
+      <h1><small>経穴暗唱</small>スタンプラリー</h1>
+      <div class="talk"><div class="mascot">${tsubo(mood)}</div><div class="bubble">${msg}</div></div>
+    </header>
+    <section class="box score" aria-label="本番スコア">
+      <div class="score-top"><span class="k">本番スコア</span><span class="v"><b>${score}</b> / ${MAXPT}点</span></div>
+      <div class="score-bar">${STAGES.map(s=>`<i style="--w:${s.pt}" class="${store.official[s.n]?"on":stStat(s.n).clears?"pr":""}"></i>`).join("")}</div>
+      <div class="score-sub"><span><i style="background:var(--red)"></i>本番スタンプ ${offN}/${NST}</span><span><i style="background:var(--or-l);opacity:.55"></i>練習クリア ${pracN}/${NST}</span></div>
+    </section>
+    <section>
+      <div class="sec-h"><h2>スタンプカード</h2><span>タップして挑戦</span></div>
+      <div class="stamps">${STAGES.map(st=>{const s=stStat(st.n),off=store.official[st.n];
+        return `<button class="slot ${st.n===1?"wide":""} ${off?"off":""} ${s.clears?"prac":""} ${nx&&nx.n===st.n?"next":""}" data-stage="${st.n}" aria-label="第${st.n}段階 ${st.label} 制限${st.limit}秒${off?" 合格済み":""}">
+          <span class="ring"><span class="no">${st.n}</span>${off?stampSVG("合格",`第${st.n}段階`,fmtDay(off)):""}</span>
+          <span class="txt"><span class="nm">${st.short}</span><span class="lim"><b>${st.limit}秒</b>${st.upto?` · ${stCount(st)}穴`:" · 12経"}</span></span>
+          ${s.clears&&!off?`<span class="pb">練習○</span>`:""}</button>`;}).join("")}</div>
+    </section>
+    <section class="box rules">
+      <div class="sec-h"><h2>チャレンジのルール</h2></div>
+      <ol>
+        <li><span>1</span>十二経脈の正式名称を肺経から順番に暗唱。流注の方向を指で大まかになぞる。</li>
+        <li><span>2</span>毎段階、肺経からその段階の経絡まで順に全経穴を暗唱する。</li>
+        <li><span>3</span>見本を見ず、経穴のおおよその位置を指しながら名前を言う。</li>
+      </ol>
+      <div class="haiten"><span>1段クリア＝スタンプ1個</span><span>配点：正式名称2点 / 肺経3点 / 以降各5点</span></div>
+    </section>
+  </div>`;
+  $$("[data-stage]",$("#v-rally")).forEach(b=>b.onclick=()=>openStage(+b.dataset.stage));
+}
+function openStage(n){
+  const st=STAGES[n-1],s=stStat(n),cnt=stCount(st),off=store.official[n];
+  const sc=openSheet(`
+    <div class="sg-head"><div class="sg-no">${n}<small>段階</small></div><div style="min-width:0"><h3>${st.label}</h3>
+      <p class="sg-sub">${st.upto?stIds(st).map(id=>MI[id].short).join(" → "):"肺経から肝経まで、12経の正式名称"}</p></div></div>
+    <div class="facts"><div><b>${st.limit}<small>秒</small></b>制限時間</div><div><b>${cnt}<small>${stUnit(st)}</small></b>暗唱する数</div><div><b>${(st.limit/cnt).toFixed(2)}<small>秒</small></b>1つあたり</div><div><b>${st.pt}<small>点</small></b>累計${st.cum}点</div></div>
+    <div class="mystat">挑戦 ${s.tries}回 · 練習クリア ${s.clears}回 · ベスト ${s.best!=null?fmtS(s.best):"—"}</div>
+    <div class="seg wide" role="group" aria-label="挑戦のしかた"><button data-rs="oral" aria-pressed="${store.rstyle==="oral"}">本番形式</button><button data-rs="card" aria-pressed="${store.rstyle==="card"}">カードめくり</button></div>
+    <p class="hint" id="rsHint"></p>
+    <button class="btn-p" id="goStage">スタート！</button>
+    <div class="official ${off?"on":""}">
+      ${off?`<div class="off-stamp">${stampSVG("合格",`第${n}段階`,fmtDay(off))}</div><div class="grow"><b>本番で合格済み</b>${fmtDay(off)}にスタンプ獲得<br><button class="linkbtn" id="offUndo">取り消す</button></div>`
+        :`<div class="grow"><b>本番の口頭試問で合格したら</b>ここでスタンプを押して記録しよう</div><button class="btn-off" id="offSet">合格スタンプ</button>`}
+    </div>`);
+  const hint=()=>{$("#rsHint",sc).innerHTML=store.rstyle==="oral"
+    ?(st.upto?"本番と同じく<b>画面に経穴は出ません</b>。声に出して言い、経絡を言い終えるたびに大きなボタンをタップ。最後に自己採点します。":"<b>名前は画面に出ません</b>。流注を指でなぞりながら、1つ言うごとにボタンをタップ。最後に自己採点します。")
+    :"1つ言うごとにカードをタップして答え合わせ。✕を押すとその場で終了します。";};
+  hint();
+  $$("[data-rs]",sc).forEach(b=>b.onclick=()=>{store.rstyle=b.dataset.rs;save();$$("[data-rs]",sc).forEach(x=>x.setAttribute("aria-pressed",x===b));hint();});
+  $("#goStage",sc).onclick=()=>startStage(n,store.rstyle);
+  const os=$("#offSet",sc);
+  if(os)os.onclick=()=>{store.official[n]=Date.now();save();closeSheet();renderRally();
+    slam(stampSVG("合格",`第${n}段階`,fmtDay(Date.now())));setTimeout(()=>{confetti();sfx.fanfare();},350);
+    toast(`第${n}段階 合格スタンプを押しました`);};
+  const ou=$("#offUndo",sc);
+  if(ou)ou.onclick=()=>{delete store.official[n];save();renderRally();openStage(n);toast("スタンプを取り消しました");};
+}
+function startStage(n,style){closeSheet();if(style==="oral")startOral(n);else start({mode:"rally",stage:n});}
+
+// ===== プレイ共通 =====
+let S=null,R=null,tick=null,raf=0,cdT=[];
+function showPlay(){$("#play").hidden=false;}
+function cleanupPlay(){cancelAnimationFrame(raf);clearInterval(tick);cancelCountdown();S=null;R=null;}
+function exitPlay(){cleanupPlay();releaseAwake();closeSheet();const p=$("#play");p.hidden=true;p.innerHTML="";p.removeAttribute("data-state");render();}
+function countdown(cb){
+  cancelCountdown();
+  const d=document.createElement("div");d.className="cd";d.id="cd";document.body.appendChild(d);
+  ["3","2","1","スタート！"].forEach((s,i)=>cdT.push(setTimeout(()=>{d.innerHTML=`<span class="${i===3?"go":""}">${s}</span>`;i<3?sfx.beep():sfx.go();buzz(i<3?15:40);},i*650)));
+  cdT.push(setTimeout(()=>{d.remove();cb();},3*650+420));
+}
+function cancelCountdown(){cdT.forEach(clearTimeout);cdT=[];const d=$("#cd");if(d)d.remove();}
+function warnTicks(o,rem){
+  const sec=Math.ceil(rem);
+  if(rem>0&&sec<=5&&sec!==o.lastTick){o.lastTick=sec;sfx.tick();}
+  if(rem<=0&&!o.overSig){o.overSig=true;sfx.over();buzz([60,40,60]);}
+}
+function recordRally({stage,style,sec,status,laps,fail}){
+  const l={t:Date.now(),mode:"rally",stage,style,sec:Math.round(sec*10)/10,status,laps:(laps||[]).map(x=>Math.round(x*100)/100),fail:fail?{m:fail.m,i:fail.i,n:fail.n}:null};
+  store.logs.unshift(l);store.logs=store.logs.slice(0,400);save();return l;
+}
+
+// ===== 本番形式（タイマーだけ） =====
+function startOral(n){
+  cleanupPlay();
+  const st=STAGES[n-1];
+  const segs=st.upto?stIds(st).map(id=>({id,label:MI[id].short,cnt:MI[id].pts.length})):FLOW.map((id,i)=>({id,label:String(i+1),cnt:1}));
+  R={n,st,segs,total:sum(segs.map(s=>s.cnt)),lap:0,laps:[],t0:0,running:false,ended:false,state:null,lastTick:null,overSig:false};
+  const p=$("#play");p.style.setProperty("--acc","var(--or)");p.dataset.state="";
+  p.innerHTML=`
+    <div class="ptop"><button class="icon" id="oQuit" aria-label="やめる">${ICON.x}</button>
+      <div class="pmeta"><div class="mn">第${n}段階 · ${st.label}</div><div class="ct">本番形式 · 制限 ${st.limit}秒</div></div>
+      <button class="icon" id="oSnd" aria-label="効果音のオンオフ">${store.sound?ICON.snd:ICON.mute}</button></div>
+    <div class="omain">
+      <div class="timer-wrap"><svg class="tring" viewBox="0 0 220 220" aria-hidden="true"><circle class="trk" cx="110" cy="110" r="96"/><circle class="arc" id="arc" cx="110" cy="110" r="96" pathLength="1000" style="stroke-dashoffset:0"/></svg>
+        <div class="tnum" role="timer" aria-live="off"><b id="tRem">${st.limit.toFixed(1)}</b><span id="tLbl">のこり秒</span></div>
+        <div class="tmascot" id="tMas">${tsubo("normal")}</div></div>
+      <div class="pace" id="pace">${st.upto?`目安ペース：1穴 ${(st.limit/R.total).toFixed(2)}秒`:`目安ペース：1経 ${(st.limit/12).toFixed(1)}秒`}</div>
+      <div class="laps ${st.upto?"":"nums"}" id="laps">${segs.map((s,i)=>`<span class="lp${i===0?" cur":""}" style="--c:${col(s.id)}">${s.label}<em></em></span>`).join("")}</div>
+      <p class="cue">${st.upto?"見本を見ず、経穴の位置を指しながら":"流注の方向を指でなぞりながら"}</p>
+    </div>
+    <div class="obot"><button class="btn-give" id="oGive">ギブ<br>アップ</button><button class="btn-lap" id="oLap"></button></div>`;
+  lapLabel();
+  $("#oLap").addEventListener("pointerdown",e=>{if(e.isPrimary&&e.button===0){e.preventDefault();lapOral();}});
+  $("#oGive").onclick=giveOral;
+  $("#oQuit").onclick=()=>{if(R&&R.running&&!R.ended){R.ended=true;recordRally({stage:n,style:"oral",sec:elapsedO(),status:"quit",laps:R.laps});toast("中断を記録しました");}exitPlay();};
+  $("#oSnd").onclick=()=>{store.sound=!store.sound;save();$("#oSnd").innerHTML=store.sound?ICON.snd:ICON.mute;};
+  showPlay();
+  countdown(()=>{if(!R)return;R.t0=performance.now();R.running=true;keepAwake();loopOral();});
+}
+function elapsedO(){return R&&R.running?(performance.now()-R.t0)/1000:0;}
+function lapLabel(){
+  const b=$("#oLap");if(!b||!R)return;
+  const i=R.lap,last=i===R.segs.length-1;
+  b.classList.toggle("stop",last);
+  b.innerHTML=last?`言い終わった！<small>タップでストップ</small>`
+    :R.st.upto?`${R.segs[i].label} 言えた → 次へ<small>つぎは ${R.segs[i+1].label}</small>`
+    :`${i+1}つ目 言えた<small>1つ言うごとにタップ</small>`;
+}
+function loopOral(){
+  if(!R||R.ended)return;
+  const el=elapsedO(),rem=R.st.limit-el;
+  $("#tRem").textContent=rem>=0?rem.toFixed(1):"+"+(-rem).toFixed(1);
+  $("#tLbl").textContent=rem>=0?"のこり秒":"オーバー";
+  $("#arc").style.strokeDashoffset=String(1000*(1-Math.max(0,rem)/R.st.limit));
+  const state=rem<0?"over":rem<R.st.limit*.25?"warn":"";
+  if(state!==R.state){R.state=state;$("#play").dataset.state=state;$("#tMas").innerHTML=tsubo(state==="over"?"sad":state==="warn"?"panic":"normal");}
+  warnTicks(R,rem);
+  raf=requestAnimationFrame(loopOral);
+}
+function lapOral(){
+  if(!R||!R.running||R.ended)return;
+  const el=elapsedO(),lapT=el-sum(R.laps);
+  R.laps.push(lapT);sfx.pop();buzz(10);
+  const chips=$$("#laps .lp"),i=R.lap;
+  chips[i].classList.remove("cur");chips[i].classList.add("done");chips[i].querySelector("em").textContent=lapT.toFixed(1);
+  if(R.st.upto&&R.segs.length>1){
+    const tgt=R.st.limit*sum(R.segs.slice(0,i+1).map(s=>s.cnt))/R.total,d=el-tgt,pc=$("#pace");
+    pc.className="pace "+(d<=0?"fast":"slow");pc.textContent=d<=0?`目安より ${(-d).toFixed(1)}秒 はやい！`:`目安より ${d.toFixed(1)}秒 おそい`;
+  }
+  R.lap++;
+  if(R.lap>=R.segs.length){stopOral();return;}
+  chips[R.lap].classList.add("cur");lapLabel();
+}
+function stopOral(){
+  R.ended=true;cancelAnimationFrame(raf);releaseAwake();
+  const sec=sum(R.laps),over=sec>R.st.limit;
+  $("#tRem").textContent=over?"+"+(sec-R.st.limit).toFixed(1):(R.st.limit-sec).toFixed(1);
+  const sc=openSheet(`<div class="selfcheck">
+      <div class="bigtime ${over?"over":""}"><b>${sec.toFixed(1)}</b> 秒<br>制限 ${R.st.limit}秒${over?` · <span style="color:var(--red)">${(sec-R.st.limit).toFixed(1)}秒オーバー</span>`:` · <span style="color:var(--ok)">${(R.st.limit-sec).toFixed(1)}秒のこし</span>`}</div>
+      <h3>最後まで正しく言えた？</h3>
+      <p class="hint">順番の抜けや言い間違いがなければ「言えた！」。正直にいこう。</p>
+    </div>
+    <div class="actions row"><button class="btn-s" id="scNg">つまった・<br>間違えた</button><button class="btn-p" id="scOk">言えた！</button></div>`,true);
+  const done=ok=>{const status=ok?(over?"over":"clear"):"fail";const l=recordRally({stage:R.n,style:"oral",sec,status,laps:R.laps});rallyResult(l);};
+  $("#scOk",sc).onclick=()=>done(true);$("#scNg",sc).onclick=()=>done(false);
+}
+function giveOral(){
+  if(!R||R.ended)return;
+  if(!R.running){exitPlay();return;}
+  R.ended=true;cancelAnimationFrame(raf);releaseAwake();
+  rallyResult(recordRally({stage:R.n,style:"oral",sec:elapsedO(),status:"quit",laps:R.laps}));
+}
+
+// ===== スタンプラリー結果 =====
+function splitChart(l){
+  const st=STAGES[l.stage-1];if(!st.upto||!l.laps.length)return"";
+  const ids=stIds(st);if(ids.length<2)return"";
+  const total=stCount(st),rows=ids.map((id,i)=>({id,lap:l.laps[i],tgt:st.limit*MI[id].pts.length/total}));
+  const scale=Math.max(...rows.map(r=>Math.max(r.lap||0,r.tgt)))*1.08;
+  return `<div class="split"><p class="label">経絡ごとのタイム <span>｜ 黒い線＝目安ペース</span></p>${rows.map(r=>`<div class="sr" style="--c:${col(r.id)}"><span>${MI[r.id].short}</span><span class="sb"><i style="width:${r.lap!=null?r.lap/scale*100:0}%"></i><b style="left:${r.tgt/scale*100}%"></b></span><span class="sd ${r.lap==null?"":r.lap>r.tgt?"slow":"fast"}">${r.lap==null?"—":r.lap.toFixed(1)+"秒"}</span></div>`).join("")}</div>`;
+}
+function rallyResult(l){
+  const st=STAGES[l.stage-1];
+  const others=store.logs.filter(x=>x!==l&&x.mode==="rally"&&x.stage===l.stage&&x.status==="clear");
+  const prevBest=others.length?Math.min(...others.map(x=>x.sec)):null;
+  let head;
+  if(l.status==="clear"){
+    head=`<div class="stampbox">${stampSVG("クリア",`第${l.stage}段階`,`${l.sec.toFixed(1)}秒`)}</div><h3 class="ok">クリア！</h3>
+      <p><b>${fmtS(l.sec)}</b> / 制限${st.limit}秒 · <b>${(st.limit-l.sec).toFixed(1)}秒</b>のこし</p>
+      ${prevBest==null?`<span class="best-badge">はじめてのクリア！</span>`:l.sec<prevBest?`<span class="best-badge">ベスト更新！ 前回 ${fmtS(prevBest)}</span>`:`<p>ベスト ${fmtS(prevBest)}</p>`}`;
+  }else if(l.status==="over"){
+    head=`<div class="mas">${tsubo("panic")}</div><h3>あと ${(l.sec-st.limit).toFixed(1)}秒！</h3><p>${fmtS(l.sec)} / 制限${st.limit}秒。最後まで言えてる！あとはスピードだけ。</p>`;
+  }else if(l.status==="fail"){
+    head=`<div class="mas">${tsubo("sad")}</div><h3>おしい！</h3><p>${l.fail?`<b>${esc(l.fail.n)}</b>${st.upto?`（${MI[l.fail.m].short}）`:""}でつまりました`:"つまったところを練習モードで固めよう"}</p>`;
+  }else{
+    head=`<div class="mas">${tsubo("sad")}</div><h3>ギブアップ</h3><p>${fmtS(l.sec)}の時点でストップ。まずは練習でリズムをつかもう。</p>`;
+  }
+  let chain="";
+  if(l.status==="fail"&&l.fail&&st.upto){const m=MI[l.fail.m];
+    chain=`<div><p class="label">${m.name}</p><div class="chain">${m.pts.map((p,i)=>`<span class="${i<l.fail.i?"":i===l.fail.i?"no":"rest"}">${esc(p.n)}</span>`).join("")}</div></div>`;}
+  const nextOk=l.status==="clear"&&l.stage<NST;
+  const sc=openSheet(`<div class="rr">${head}</div>${splitChart(l)}${chain}
+    ${l.status==="clear"&&!store.official[l.stage]?`<p class="hint" style="text-align:center">本番で合格したら、スタンプカードから「合格スタンプ」を押そう</p>`:""}
+    <div class="actions">
+      ${nextOk?`<button class="btn-p" id="rNext">第${l.stage+1}段階に進む</button><button class="btn-s" id="rAgain">もう一度</button>`:`<button class="btn-p" id="rAgain">もう一度チャレンジ</button>`}
+      ${(l.status==="fail"&&l.fail&&st.upto)?`<button class="btn-s" id="rPrac">${MI[l.fail.m].short}を累積リハーサルで練習</button>`:""}
+      <button class="btn-s" id="rHome">スタンプカードへ</button></div>`,true);
+  if(l.status==="clear"){setTimeout(()=>{sfx.pon();buzz(45);},140);setTimeout(()=>{confetti();sfx.fanfare();},380);}
+  else if(l.status!=="quit")sfx.sad();
+  if(nextOk)$("#rNext",sc).onclick=()=>startStage(l.stage+1,l.style);
+  $("#rAgain",sc).onclick=()=>startStage(l.stage,l.style);
+  const rp=$("#rPrac",sc);if(rp)rp.onclick=()=>{closeSheet();start({mode:"cumul",ids:[l.fail.m],win:0});};
+  $("#rHome",sc).onclick=()=>{exitPlay();setTab("rally");};
+}
+
+// ===== 練習画面 =====
+function contIds(from,extra){const i=FLOW.indexOf(from);const ids=FLOW.slice(i<0?0:i);return extra?ids.concat(CVGV):ids;}
+function buildSeq(ids){const seq=[];let gi=0;for(const id of ids){seq.push({k:"m",m:id});MI[id].pts.forEach((p,i)=>seq.push({k:"p",m:id,i,n:p.n,y:p.y,gi:gi++}));}return {seq,total:gi};}
+function bestFor(id,mode="single"){
+  const ls=store.logs.filter(l=>l.mode===mode&&l.ids&&l.ids[0]===id);
+  if(!ls.length)return null;
+  const clears=ls.filter(l=>l.status==="clear");
+  return {best:Math.max(...ls.map(l=>l.done)),clears:clears.length,bt:clears.length?Math.min(...clears.map(l=>l.sec)):null,last:ls[0]};
+}
+function renderPrac(){
+  const ids=contIds(store.contFrom,store.contExtra);
+  const total=sum(ids.map(id=>MI[id].pts.length));
+  const lastCont=store.logs.find(l=>l.mode==="cont");
+  const resume=lastCont&&lastCont.status!=="clear"&&lastCont.fail?lastCont:null;
+  const cumul=store.single==="cumul";
+  $("#v-prac").innerHTML=`<div class="wrap">
+    <header class="ph"><div><h1>練習</h1><p>流注の順に、テンポよく。</p></div>${toggles()}</header>
+    <section class="cont" aria-labelledby="cth">
+      <div><h2 id="cth">連続モード</h2>
+        <div class="flow">${(store.contExtra?FLOW.concat(CVGV):FLOW).map((id,k)=>`${k?"<i>›</i>":""}<span style="${ids.includes(id)?"":"opacity:.5"}">${MI[id].short}</span>`).join("")}</div></div>
+      <div><p class="label" style="color:#fff;opacity:.85;margin-bottom:6px">スタート位置</p>
+        <div class="chips">${FLOW.map(id=>`<button class="chip" data-from="${id}" aria-pressed="${id===store.contFrom}">${MI[id].short}</button>`).join("")}</div></div>
+      <button class="check" id="extra" aria-pressed="${store.contExtra}"><span class="cb">${store.contExtra?"✓":""}</span>督脈・任脈も続ける</button>
+      <button class="btn-go" id="goCont">はじめる<small>${ids.length}経 ${total}穴</small></button>
+      ${resume?`<button class="btn-resume" id="resume">前回の続き：<b>${esc(resume.fail.n)}</b>（${MI[resume.fail.m].short}）から再開 →</button>`:""}
+    </section>
+    <section><div class="single-head"><div class="sec-h" style="margin:0"><h2>個別モード</h2></div>
+      <div class="seg" role="group" aria-label="個別モードの練習方法"><button data-sm="flow" aria-pressed="${!cumul}">通し</button><button data-sm="cumul" aria-pressed="${cumul}">累積リハーサル</button></div>
+      ${cumul?`<p class="hint">1穴ずつ増やしながら、毎回さかのぼって言い直します。<br>中府 → 中府・雲門 → 中府・雲門・天府 …　間違えたらその周を最初から。</p>
+        <div class="wins" role="group" aria-label="さかのぼる範囲"><button data-win="0" aria-pressed="${!store.win}">毎回いちばん最初から</button><button data-win="10" aria-pressed="${store.win===10}">直近10穴だけ</button></div>`
+      :`<p class="hint">経絡を1つ選び、最初から最後まで通して言います。</p>`}</div>
+      <div class="grid">${M.map(m=>{const b=bestFor(m.id,cumul?"cumul":"single");const pct=b?Math.round(b.best/m.pts.length*100):0;
+        const st=!b?"未挑戦":b.clears?`完走 ${b.clears}回 · ベスト ${fmt(b.bt)}`:cumul?`前回 第${b.last.round}周で中断`
+          :b.last.fail?`前回 ${b.last.fail.n}で${b.last.status==="fail"?"断念":"中断"}`:`最高 ${b.best}/${m.pts.length}`;
+        return `<button class="tile" data-one="${m.id}" style="--acc:${col(m.id)}">${b&&b.clears?'<span class="done">完走</span>':""}
+          <span class="s">${m.short}<small>${m.pts.length}穴</small></span><span class="f">${m.name}</span>
+          <span class="bar"><i style="width:${pct}%"></i></span><span class="st">${esc(st)}</span></button>`;}).join("")}</div>
+    </section>
+  </div>`;
+  const v=$("#v-prac");bindToggles(v);
+  $("#extra",v).onclick=()=>{store.contExtra=!store.contExtra;save();renderPrac();};
+  $$("[data-from]",v).forEach(b=>b.onclick=()=>{store.contFrom=b.dataset.from;save();renderPrac();});
+  $("#goCont",v).onclick=()=>start({mode:"cont",ids});
+  if(resume)$("#resume",v).onclick=()=>start({mode:"cont",ids:resume.ids,fromGi:resume.fail.gi});
+  $$("[data-one]",v).forEach(b=>b.onclick=()=>start(cumul?{mode:"cumul",ids:[b.dataset.one],win:store.win}:{mode:"single",ids:[b.dataset.one]}));
+  $$("[data-sm]",v).forEach(b=>b.onclick=()=>{store.single=b.dataset.sm;save();renderPrac();});
+  $$("[data-win]",v).forEach(b=>b.onclick=()=>{store.win=+b.dataset.win;save();renderPrac();});
+}
+
+// ===== 記録画面 =====
+function logTitle(l){
+  if(l.mode==="rally")return `ラリー 第${l.stage}段階 ${STAGES[l.stage-1].label}`;
+  if(l.mode==="single")return MI[l.ids[0]].name;
+  if(l.mode==="cumul")return `累積 ${MI[l.ids[0]].name}${l.win?`（直近${l.win}穴）`:""}`;
+  return `連続 ${MI[l.ids[0]].short}→${MI[l.ids[l.ids.length-1]].short}`;
+}
+function logDetail(l){
+  if(l.mode==="rally"){const st=STAGES[l.stage-1];
+    const s={clear:"クリア",over:"時間オーバー",fail:l.fail?`${l.fail.n}でつまった`:"つまった",quit:"ギブアップ"}[l.status];
+    return `${s} · ${l.sec.toFixed(1)}/${st.limit}秒 · ${l.style==="oral"?"本番形式":"カード"} · ${fmtDate(l.t)}`;}
+  if(l.mode==="cumul"){
+    const s=l.status==="clear"?`全${l.total}周`:`第${l.round}周${l.fail?`（${l.fail.n}）`:""}で中断`;
+    return `${s} · ミス${(l.misses||[]).length}回 · ${fmt(l.sec)} · ${fmtDate(l.t)}`;}
+  const at=l.fail?`${l.fail.n}（${MI[l.fail.m].short}）`:"";
+  const s=l.status==="clear"?"最後まで":l.status==="fail"?`${at}で断念`:`${at}で中断`;
+  return `${s} · ${l.done}/${l.total} · ${fmt(l.sec)} · ${fmtDate(l.t)}`;
+}
+function logRow(l){
+  let dots,b;
+  if(l.mode==="rally"){dots=`<i style="--acc:var(--or)"></i>`;
+    b={clear:'<span class="badge clear">クリア</span>',over:'<span class="badge over">オーバー</span>',fail:'<span class="badge fail">つまった</span>',quit:'<span class="badge quit">中断</span>'}[l.status];}
+  else{const ids=l.mode!=="cont"?l.ids:[...new Set([l.ids[0],l.fail?l.fail.m:l.ids[l.ids.length-1]])];
+    dots=ids.map(id=>`<i style="--acc:${col(id)}"></i>`).join("");
+    b=l.status==="clear"?'<span class="badge clear">完走</span>':l.status==="fail"?'<span class="badge fail">断念</span>':'<span class="badge quit">中断</span>';}
+  return `<div class="lrow"><span class="dots">${dots}</span><div style="min-width:0"><div class="t">${esc(logTitle(l))}</div><div class="d">${esc(logDetail(l))}</div></div>${b}</div>`;
+}
+function renderLog(){
+  const rows=STAGES.map(st=>{
+    const ls=store.logs.filter(l=>l.mode==="rally"&&l.stage===st.n&&(l.status==="clear"||l.status==="over"));
+    const best=ls.length?Math.min(...ls.map(l=>l.sec)):null,scale=Math.max(st.limit/.78,best||0)*1.02;
+    return `<div class="br"><span class="bl"><em>${st.n}</em>${st.upto?(st.n>2?"〜":"")+MI[st.upto].short:"正式名称"}</span><span class="bt">${best!=null?`<i class="${best<=st.limit?"":"ng"}" style="width:${best/scale*100}%"></i>`:""}<b style="left:${st.limit/scale*100}%"></b></span>
+      <span class="bv ${best!=null&&best<=st.limit?"ok":""}">${best!=null?`${best.toFixed(1)}`:"—"} / ${st.limit}秒</span></div>`;}).join("");
+  $("#v-log").innerHTML=`<div class="wrap">
+    <header class="ph"><div><h1>記録</h1><p>この端末だけに保存</p></div>${toggles()}</header>
+    <section class="box bests"><div class="sec-h" style="margin:0"><h2>ラリーのベストタイム</h2></div>${rows}
+      <div class="legend"><span><i></i>言い切れたベスト</span><span><b></b>制限時間</span></div></section>
+    <section><div class="sec-h"><h2>履歴</h2><span>${store.logs.length}件</span></div>
+      <div class="box recent">${store.logs.length?store.logs.slice(0,120).map(logRow).join(""):'<div class="empty">まだ記録はありません。スタンプカードの段階をタップして挑戦してみよう。</div>'}</div></section>
+    ${store.logs.length?'<div class="confirm" id="clr"><button id="clr1">履歴をすべて消す</button></div>':""}
+  </div>`;
+  const v=$("#v-log");bindToggles(v);
+  const c=$("#clr1",v);if(c)c.onclick=()=>{$("#clr",v).innerHTML=`<span>${store.logs.length}件の履歴を消します（本番スタンプは残ります）。元に戻せません。</span><button class="danger" id="clrY">消す</button><button id="clrN">やめる</button>`;
+    $("#clrY",v).onclick=()=>{store.logs=[];save();renderLog();};$("#clrN",v).onclick=renderLog;};
+}
+
+// ===== カードめくり（練習・ラリー共通） =====
+function buildCumul(id,win){
+  const m=MI[id],items=[];
+  m.pts.forEach((_,r)=>{const s=win?Math.max(0,r+1-win):0;items.push({k:"r",m:id,r:r+1,s,e:r});
+    for(let i=s;i<=r;i++)items.push({k:"p",m:id,i,n:m.pts[i].n,y:m.pts[i].y,gi:i,r:r+1,s,e:r});});
+  return items;
+}
+function start(o){
+  cleanupPlay();
+  const mode=o.mode;let items,total,extra={},offset=0;
+  if(mode==="cumul"){items=buildCumul(o.ids[0],o.win||0);total=MI[o.ids[0]].pts.length;}
+  else if(mode==="rally"){const st=STAGES[o.stage-1];
+    items=st.upto?buildSeq(stIds(st)).seq.filter(x=>x.k==="p"):FLOW.map((id,i)=>({k:"n",m:id,i,n:MI[id].name,y:MI[id].yomi,gi:i}));
+    total=items.length;extra={stage:o.stage,limit:st.limit,laps:[],armed:false,state:null,lastTick:null,overSig:false};}
+  else{const b=buildSeq(o.ids);let k=0;offset=o.fromGi||0;
+    if(offset>0){k=b.seq.findIndex(x=>x.k==="p"&&x.gi===offset);if(k<0)k=0;}
+    items=b.seq.slice(k);if(k>0)items=[{k:"m",m:b.seq[k].m,resume:b.seq[k]}].concat(items);total=b.total;}
+  S=Object.assign({mode,ids:o.ids||[],win:o.win||0,items,total,offset,misses:[],retry:null,idx:0,t0:0,sec:0,running:false,ended:false},extra);
+  const rally=mode==="rally",p=$("#play");p.dataset.state="";
+  p.innerHTML=`
+    <div class="ptop"><button class="icon" id="quit" aria-label="やめる">${ICON.x}</button>
+      <div class="pmeta"><div class="mn" id="mn"></div><div class="ct"><span id="ct"></span>${rally?"":`<span class="timer" id="tm">0:00</span>`}</div></div>
+      <button class="icon" id="undo" aria-label="1つ戻る">${ICON.undo}</button></div>
+    <div class="progrow"><div class="prog ${mode==="cont"?"multi":""}" id="prog">${mode==="cont"?S.ids.map(id=>`<b style="--n:${MI[id].pts.length};--c:${col(id)}"><i data-p="${id}" style="width:0"></i></b>`).join(""):'<i id="pbar" style="width:0"></i>'}${rally?'<span class="ghost" id="ghost" style="left:0"></span>':""}</div>
+      ${rally?`<div class="ctimer" role="timer"><b id="tm">${S.limit.toFixed(1)}</b><small>秒</small></div>`:""}</div>
+    <div class="stage"><div class="card" id="card" role="button" tabindex="0" aria-label="できた・次へ"><div class="ring"></div><div class="prev" id="prev"></div><div id="face"></div><div class="num" id="num"></div></div></div>
+    <div class="pbot"><button class="btn-ng" id="ng">✕ できなかった</button><button class="btn-ok" id="ok">○ できた・次へ</button></div>`;
+  const card=$("#card");
+  const go=e=>{if(e.isPrimary&&e.button===0){e.preventDefault();next();}};
+  card.addEventListener("pointerdown",go);$("#ok").addEventListener("pointerdown",go);
+  card.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();next();}});
+  $("#ng").onclick=fail;$("#undo").onclick=undo;$("#quit").onclick=quit;
+  showPlay();paint(0);card.focus({preventScroll:true});
+  if(rally)countdown(()=>{if(!S)return;S.armed=true;startTimer();keepAwake();});
+}
+function cur(){return S.items[S.idx];}
+function doneCount(){let c=0;for(let j=0;j<S.idx;j++)if(S.items[j].k!=="m"&&S.items[j].k!=="r")c++;return c;}
+function roundsDone(){if(S.ended&&S.idx>=S.items.length)return S.total;const it=cur();return it?it.r-1:0;}
+function elapsed(){return S.running?S.sec+(performance.now()-S.t0)/1000:S.sec;}
+function startTimer(){
+  if(S.running)return;S.running=true;S.t0=performance.now();
+  if(S.mode==="rally"){loopCard();return;}
+  clearInterval(tick);tick=setInterval(()=>{const t=$("#tm");if(t&&S)t.textContent=fmt(elapsed());},250);
+}
+function stopTimer(){if(S&&S.running){S.sec=elapsed();S.running=false;}clearInterval(tick);cancelAnimationFrame(raf);}
+function loopCard(){
+  if(!S||S.mode!=="rally"||S.ended)return;
+  const el=elapsed(),rem=S.limit-el;
+  $("#tm").textContent=rem>=0?rem.toFixed(1):"+"+(-rem).toFixed(1);
+  $("#ghost").style.left=Math.min(100,el/S.limit*100)+"%";
+  const state=rem<0?"over":rem<S.limit*.25?"warn":"";
+  if(state!==S.state){S.state=state;$("#play").dataset.state=state;}
+  warnTicks(S,rem);
+  raf=requestAnimationFrame(loopCard);
+}
+function anim(card,dir){if(!dir)return;card.classList.remove("flash","back","miss");void card.offsetWidth;card.classList.add(dir===2?"miss":dir>0?"flash":"back");}
+function paintCumul(it,m){
+  $("#ct").textContent=`第${it.r}周 / ${S.total}周`;
+  if(it.k==="r"){
+    const len=it.e-it.s+1;let sub;
+    if(S.retry&&S.retry.r===it.r)sub=`<b style="color:var(--red)">✕ ${esc(S.retry.n)}</b> · もう一度この周を最初から`;
+    else if(it.r===1)sub=`${m.pts.length}周まで · タップでスタート`;
+    else sub=`${it.s>0?`${it.s+1}番目から`:"最初から"} ${len}穴 · タップで開始`;
+    $("#face").innerHTML=`<div class="pt mer">第${it.r}周</div><div class="sub">${sub}</div>`;
+    $("#prev").textContent=it.r>1&&!(S.retry&&S.retry.r===it.r)?`第${it.r-1}周 クリア`:"";
+    $("#num").textContent="";
+  }else{
+    $("#face").innerHTML=`${it.i===it.e&&it.r>1?'<div class="newtag">NEW</div>':""}<div class="pt">${ruby(it.n,it.y)}</div>`;
+    const pv=S.items[S.idx-1];$("#prev").textContent=pv&&pv.k==="p"?`${pv.n}　›`:"";
+    $("#num").textContent=`第${it.r}周　${it.i-it.s+1} / ${it.e-it.s+1}`;
+  }
+  $("#pbar").style.width=(roundsDone()/S.total*100)+"%";
+}
+function paint(dir){
+  const it=cur(),m=MI[it.m],card=$("#card");
+  $("#play").style.setProperty("--acc",col(it.m));
+  if(S.mode==="cumul"){
+    $("#mn").textContent=`${m.name}（累積）`;paintCumul(it,m);
+    $("#ng").disabled=it.k!=="p";$("#undo").disabled=S.idx===0;anim(card,dir);return;
+  }
+  if(S.mode==="rally"){
+    const st=STAGES[S.stage-1];
+    $("#mn").textContent=`第${S.stage}段階 · ${it.k==="n"?st.label:m.name}`;
+    $("#ct").textContent=`${S.idx} / ${S.total}`;
+    const pv=S.items[S.idx-1];
+    if(it.k==="n"){$("#face").innerHTML=`<div class="pt mer">${ruby(it.n,it.y)}</div>`;$("#num").textContent=`${it.i+1} / 12`;}
+    else{$("#face").innerHTML=`<div class="pt">${ruby(it.n,it.y)}</div>`;$("#num").textContent=`${m.short}　${it.i+1} / ${m.pts.length}`;}
+    $("#prev").textContent=pv?`${pv.k==="n"?MI[pv.m].short:pv.n}　›`:"";
+    $("#pbar").style.width=(S.idx/S.total*100)+"%";
+    $("#ng").disabled=false;$("#undo").disabled=true;anim(card,dir);return;
+  }
+  $("#mn").textContent=m.name;
+  const done=S.offset+doneCount();
+  $("#ct").textContent=`${done} / ${S.total}`;
+  if(it.k==="m"){
+    let sub;
+    if(it.resume)sub=`<b>${esc(it.resume.n)}</b> から再開 · タップでスタート`;
+    else if(S.idx===0)sub=`${m.pts.length}穴 · タップでスタート`;
+    else sub=`次の経絡 · ${m.pts.length}穴`;
+    $("#face").innerHTML=`<div class="pt mer">${ruby(m.name,m.yomi)}</div><div class="sub">${sub}</div>`;
+    const pv=S.items[S.idx-1];$("#prev").textContent=pv&&pv.k==="p"?`${pv.n} まで完了`:"";
+    $("#num").textContent="";
+  }else{
+    $("#face").innerHTML=`<div class="pt">${ruby(it.n,it.y)}</div>`;
+    const pv=S.items[S.idx-1];$("#prev").textContent=pv&&pv.k==="p"?`${pv.n}　›`:"";
+    $("#num").textContent=`${m.short}　${it.i+1} / ${m.pts.length}`;
+  }
+  $("#ng").disabled=it.k!=="p";$("#undo").disabled=S.idx===0;
+  if(S.mode==="cont"){
+    let acc=0;
+    for(const id of S.ids){const n=MI[id].pts.length,w=Math.max(0,Math.min(n,done-acc)),el=$(`[data-p="${id}"]`);if(el)el.style.width=(w/n*100)+"%";acc+=n;}
+  }else $("#pbar").style.width=(done/S.total*100)+"%";
+  anim(card,dir);
+}
+function next(){
+  if(!S||S.ended)return;
+  if(S.mode==="rally"&&!S.armed)return;
+  startTimer();swish();buzz(8);
+  const left=cur();
+  if(S.mode==="rally"&&(left.k==="n"||left.i===MI[left.m].pts.length-1))S.laps.push(elapsed()-sum(S.laps));
+  if(S.idx>=S.items.length-1){S.idx++;finish("clear");return;}
+  S.idx++;paint(1);
+}
+function undo(){if(!S||S.ended||S.idx===0||S.mode==="rally")return;S.idx--;paint(-1);}
+function fail(){
+  if(!S||S.ended)return;const it=cur();
+  if(it.k==="m"||it.k==="r")return;
+  if(S.mode==="rally"&&!S.armed)return;
+  buzz([30,40,30]);
+  if(S.mode==="cumul"){
+    startTimer();S.misses.push({r:it.r,i:it.i,n:it.n});S.retry={r:it.r,n:it.n};
+    let j=S.idx;while(j>0&&S.items[j].k!=="r")j--;S.idx=j;paint(2);return;
+  }
+  finish("fail");
+}
+function quit(){
+  if(!S)return exitPlay();
+  if(S.mode==="rally"){
+    if(S.armed&&!S.ended&&S.idx>0){stopTimer();S.ended=true;recordRally({stage:S.stage,style:"card",sec:elapsed(),status:"quit",laps:S.laps,fail:cur()});toast("中断を記録しました");}
+    return exitPlay();
+  }
+  const progressed=S.idx>0&&(doneCount()>0||S.running);
+  if(progressed&&!S.ended){stopTimer();S.ended=true;const it=cur()||{};
+    const failAt=it.k==="p"?it:it.k==="r"?{m:it.m,i:it.e,n:MI[it.m].pts[it.e].n,gi:it.e}:S.items.slice(S.idx).find(x=>x.k==="p");
+    record("quit",failAt);toast("中断した位置を記録しました");}
+  exitPlay();
+}
+function record(status,failAt){
+  const l={t:Date.now(),mode:S.mode,ids:S.ids,total:S.total,done:S.offset+doneCount(),status,sec:Math.round(elapsed()),
+    fail:failAt?{m:failAt.m,i:failAt.i,n:failAt.n,gi:failAt.gi}:null};
+  if(S.mode==="cumul"){l.done=roundsDone();l.round=Math.min(S.total,l.done+1);l.misses=S.misses;l.win=S.win;}
+  store.logs.unshift(l);store.logs=store.logs.slice(0,400);save();return l;
+}
+function finish(status){
+  stopTimer();S.ended=true;releaseAwake();
+  if(S.mode==="rally"){
+    const sec=elapsed(),it=status==="fail"?cur():null;
+    rallyResult(recordRally({stage:S.stage,style:"card",sec,status:status==="fail"?"fail":(sec<=S.limit?"clear":"over"),laps:S.laps,fail:it}));
+    return;
+  }
+  const it=status==="fail"?cur():null;
+  const prevBest=S.mode!=="cont"?bestFor(S.ids[0],S.mode):null;
+  const l=record(status,it);
+  if(S.mode!=="cumul")paint(0);
+  let html;
+  const pb=prevBest&&prevBest.bt!=null?(l.sec<prevBest.bt?`ベスト更新（前回 ${fmt(prevBest.bt)}）`:`ベスト ${fmt(prevBest.bt)}`):"初完走";
+  if(S.mode==="cumul"){
+    const cnt={};for(const x of l.misses)cnt[x.i]=(cnt[x.i]||0)+1;
+    const weak=Object.keys(cnt).map(Number).sort((a,b)=>cnt[b]-cnt[a]||a-b);
+    html=`<div class="rr"><div class="mas">${tsubo("happy")}</div><h3 class="ok">完走！ ${MI[S.ids[0]].short}（累積）</h3></div>
+      <div class="stats" style="justify-content:center"><div><b>${l.total}周</b>クリア</div><div><b>${l.misses.length}回</b>ミス</div><div><b>${fmt(l.sec)}</b>タイム</div><div><b style="font-size:15px;padding-top:6px">${pb}</b>記録</div></div>
+      ${weak.length?`<div><p class="label">つまずいた穴</p><div class="chain">${weak.map(i=>`<span class="no">${esc(MI[S.ids[0]].pts[i].n)}${cnt[i]>1?` ×${cnt[i]}`:""}</span>`).join("")}</div></div>`:`<p class="hint" style="text-align:center">ノーミスで完走！すごい！</p>`}`;
+  }else if(status==="clear"){
+    html=`<div class="rr"><div class="mas">${tsubo("happy")}</div><h3 class="ok">完走！ ${S.mode==="single"?MI[S.ids[0]].short:S.ids.length+"経"}</h3></div>
+      <div class="stats" style="justify-content:center"><div><b>${l.done}/${l.total}</b>穴</div><div><b>${fmt(l.sec)}</b>タイム</div>${S.mode==="single"?`<div><b style="font-size:15px;padding-top:6px">${pb}</b>記録</div>`:""}</div>`;
+  }else{
+    const m=MI[it.m];
+    const chain=m.pts.map((p,i)=>`<span class="${i<it.i?"":i===it.i?"no":"rest"}">${esc(p.n)}</span>`).join("");
+    const merLine=S.mode==="cont"?`<div class="mer-line">${S.ids.map(id=>{const k=S.ids.indexOf(id),f=S.ids.indexOf(it.m);return `<span style="--c:${col(id)}" class="${k<f?"":k===f?"x":"n"}"><i></i>${MI[id].short}${k<f?" ✓":k===f?" ✕":""}</span>`;}).join("")}</div>`:"";
+    html=`<div class="rr"><div class="mas">${tsubo("sad")}</div><h3><span style="color:var(--red)">${esc(it.n)}</span> で断念</h3></div>
+      <div class="stats" style="justify-content:center"><div><b>${l.done}/${l.total}</b>できた</div><div><b>${fmt(l.sec)}</b>タイム</div></div>
+      ${merLine}<div><p class="label">${m.name}</p><div class="chain">${chain}</div></div>`;
+  }
+  if(status==="clear"){setTimeout(()=>{confetti();sfx.fanfare();},150);}else sfx.sad();
+  html+=`<div class="actions">${status==="fail"?`<button class="btn-p" id="rFrom">${esc(it.n)} から再開</button>`:""}
+    <button class="${status==="fail"?"btn-s":"btn-p"}" id="rAgain">最初からもう一度</button><button class="btn-s" id="rHome">メニューへ</button></div>`;
+  const sc=openSheet(html,true);
+  const mode=S.mode,ids=S.ids,win=S.win||0;
+  if(status==="fail")$("#rFrom",sc).onclick=()=>{closeSheet();start({mode,ids,fromGi:it.gi});};
+  $("#rAgain",sc).onclick=()=>{closeSheet();start({mode,ids,win});};
+  $("#rHome",sc).onclick=()=>exitPlay();
+}
+
+// キーボード（PC）
+document.addEventListener("keydown",e=>{
+  if($("#play").hidden||$("#scrim")||$("#cd"))return;
+  if(R&&!R.ended){if(e.key===" "||e.key==="Enter"){e.preventDefault();lapOral();}else if(e.key==="Escape")$("#oQuit").click();return;}
+  if(!S)return;
+  if(e.key===" "||e.key==="ArrowRight"){e.preventDefault();next();}
+  else if(e.key==="ArrowLeft"||e.key==="Backspace"){e.preventDefault();undo();}
+  else if(e.key==="x"||e.key==="X"){fail();}
+  else if(e.key==="Escape"){quit();}
+});
+
+// 起動
+$("#tabbar").innerHTML=[["rally","stamp","スタンプラリー"],["prac","cards","練習"],["log","chart","記録"]].map(([t,ic,l])=>`<button data-tab="${t}">${ICON[ic]}<span>${l}</span></button>`).join("");
+$$("#tabbar button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+setTab(["rally","prac","log"].includes(store.tab)?store.tab:"rally");
+</script>
+</body>
+</html>

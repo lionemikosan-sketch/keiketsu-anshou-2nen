@@ -1,0 +1,21 @@
+{
+ "name": "経穴暗唱スタンプラリー 2年生",
+ "short_name": "経穴暗唱2年",
+ "start_url": "./",
+ "display": "standalone",
+ "background_color": "#FFF5EB",
+ "theme_color": "#F26A1B",
+ "lang": "ja",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}
