@@ -411,20 +411,20 @@ const CVGV = ["GV","CV"];
 
 // ===== スタンプラリー 2年生特別バージョン（肺経〜肝経） =====
 const STAGES=[
-  {n:1,label:"十二経脈の正式名称",short:"正式名称",upto:null,limit:40,pt:2,cum:2},
-  {n:2,label:"肺経",short:"肺経",upto:"LU",limit:10,pt:3,cum:5},
-  {n:3,label:"大腸経まで",short:"大腸経まで",upto:"LI",limit:25,pt:5,cum:10},
-  {n:4,label:"胃経まで",short:"胃経まで",upto:"ST",limit:60,pt:5,cum:15},
-  {n:5,label:"脾経まで",short:"脾経まで",upto:"SP",limit:75,pt:5,cum:20},
-  {n:6,label:"心経まで",short:"心経まで",upto:"HT",limit:85,pt:5,cum:25},
-  {n:7,label:"小腸経まで",short:"小腸経まで",upto:"SI",limit:100,pt:5,cum:30},
-  {n:8,label:"膀胱経まで",short:"膀胱経まで",upto:"BL",limit:150,pt:5,cum:35},
-  {n:9,label:"腎経まで",short:"腎経まで",upto:"KI",limit:170,pt:5,cum:40},
+  {n:1,label:"十二経脈の正式名称",short:"正式名称",upto:null,limit:40,pt:5,cum:5},
+  {n:2,label:"肺経",short:"肺経",upto:"LU",limit:10,pt:7,cum:12},
+  {n:3,label:"大腸経まで",short:"大腸経まで",upto:"LI",limit:25,pt:8,cum:20},
+  {n:4,label:"胃経まで",short:"胃経まで",upto:"ST",limit:60,pt:8,cum:28},
+  {n:5,label:"脾経まで",short:"脾経まで",upto:"SP",limit:75,pt:8,cum:36},
+  {n:6,label:"心経まで",short:"心経まで",upto:"HT",limit:85,pt:8,cum:44},
+  {n:7,label:"小腸経まで",short:"小腸経まで",upto:"SI",limit:100,pt:8,cum:52},
+  {n:8,label:"膀胱経まで",short:"膀胱経まで",upto:"BL",limit:150,pt:8,cum:60},
+  {n:9,label:"腎経まで",short:"腎経まで",upto:"KI",limit:170,pt:8,cum:68},
   // 2年生特別：1年生の表と同じ「1穴 約0.78秒・5秒刻み」で延長
-  {n:10,label:"心包経まで",short:"心包経まで",upto:"PC",limit:180,pt:5,cum:45},
-  {n:11,label:"三焦経まで",short:"三焦経まで",upto:"TE",limit:195,pt:5,cum:50},
-  {n:12,label:"胆経まで",short:"胆経まで",upto:"GB",limit:230,pt:5,cum:55},
-  {n:13,label:"肝経まで",short:"肝経まで",upto:"LR",limit:240,pt:5,cum:60},
+  {n:10,label:"心包経まで",short:"心包経まで",upto:"PC",limit:180,pt:8,cum:76},
+  {n:11,label:"三焦経まで",short:"三焦経まで",upto:"TE",limit:195,pt:8,cum:84},
+  {n:12,label:"胆経まで",short:"胆経まで",upto:"GB",limit:230,pt:8,cum:92},
+  {n:13,label:"肝経まで",short:"肝経まで",upto:"LR",limit:240,pt:8,cum:100},
 ];
 const MAXPT=STAGES.reduce((a,s)=>a+s.pt,0), NST=STAGES.length;
 const PERIOD={from:new Date(2026,10,19),to:new Date(2027,1,26,23,59,59)};
@@ -649,7 +649,7 @@ function renderRally(){
         <li><span>2</span>毎段階、肺経からその段階の経絡まで順に全経穴を暗唱する。</li>
         <li><span>3</span>見本を見ず、経穴のおおよその位置を指しながら名前を言う。</li>
       </ol>
-      <div class="haiten"><span>1段クリア＝スタンプ1個</span><span>配点：正式名称2点 / 肺経3点 / 以降各5点</span></div>
+      <div class="haiten"><span>1段クリア＝スタンプ1個</span><span>配点：正式名称5点 / 肺経7点 / 以降各8点（100点満点）</span></div>
     </section>
   </div>`;
   $$("[data-stage]",$("#v-rally")).forEach(b=>b.onclick=()=>openStage(+b.dataset.stage));
