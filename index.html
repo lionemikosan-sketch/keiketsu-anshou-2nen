@@ -360,6 +360,20 @@ h1,h2,h3{text-wrap:balance}
 .confetti{position:fixed;inset:0;width:100%;height:100%;z-index:75;pointer-events:none}
 .tsubo{display:block;width:100%;height:auto;overflow:visible}
 
+.pin{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.pin .pin-ic{width:64px;color:var(--red)}
+.pin .pin-ic .stamp{transform:rotate(-12deg)}
+.pin-dots{display:flex;gap:9px;margin-top:2px}
+.pin-dots i{width:15px;height:15px;border-radius:50%;border:2.5px solid var(--or-l);transition:background .08s}
+.pin-dots i.on{background:var(--or);border-color:var(--or)}
+.pin-dots.bad{animation:shake .32s ease-out}
+.pin-dots.bad i{border-color:var(--red)}
+.pin-msg{min-height:1.5em;margin:0;font-size:13px;font-weight:800;color:var(--red)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,minmax(0,76px));gap:10px}
+.pin-pad button{height:56px;border-radius:18px;border:2px solid var(--line);background:var(--paper);font-size:23px;font-weight:900;color:var(--ink);box-shadow:0 4px 0 var(--line);font-variant-numeric:tabular-nums}
+.pin-pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.pin-pad button.fn{font-size:14px;color:var(--mute)}
+.pin-pad button:disabled{opacity:.45}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -589,6 +603,50 @@ function openSheet(html,lock=false){
 }
 function closeSheet(){const s=$("#scrim");if(s)s.remove();}
 
+// ===== 先生の暗証番号（8桁）：番号そのものはソースに置かず、ハッシュだけを持つ =====
+const PIN_HASH="f39rn5x3y3";
+function cyrb53(str,seed=0){let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507);h1^=Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507);h2^=Math.imul(h1^(h1>>>13),3266489909);return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);}
+const pinOk=s=>cyrb53("keiketsu-stamp:"+s,7)===PIN_HASH;
+function askPin(title,onOk){
+  let v="";
+  const sc=openSheet(`<div class="pin"><div class="pin-ic">${stampSVG("合格","先生","確認")}</div><h3>${esc(title)}</h3>
+    <p class="hint">先生が8桁の暗証番号を入力してください</p>
+    <div class="pin-dots" id="pinDots" aria-label="入力した桁数">${"<i></i>".repeat(8)}</div><p class="pin-msg" id="pinMsg" role="status"></p>
+    <div class="pin-pad">${["1","2","3","4","5","6","7","8","9","C","0","⌫"].map(k=>`<button data-k="${k}" class="${/[0-9]/.test(k)?"":"fn"}" aria-label="${k==="C"?"全部消す":k==="⌫"?"1文字消す":k}">${k}</button>`).join("")}</div>
+    <button class="btn-s" id="pinCancel" style="align-self:stretch">やめる</button></div>`);
+  const dots=$("#pinDots",sc),msg=$("#pinMsg",sc),btns=$$(".pin-pad button",sc);
+  const locked=()=>Date.now()<(store.pinUntil||0);
+  const draw=()=>{[...dots.children].forEach((d,i)=>d.classList.toggle("on",i<v.length));};
+  const lockUI=()=>{
+    if(!locked()){btns.forEach(b=>b.disabled=false);if(msg.dataset.lock){msg.textContent="";delete msg.dataset.lock;}return;}
+    btns.forEach(b=>b.disabled=true);msg.dataset.lock="1";
+    msg.textContent=`まちがいが続いたので ${Math.ceil(((store.pinUntil||0)-Date.now())/1000)}秒 お休み中`;
+    setTimeout(()=>{if(sc.isConnected)lockUI();},500);
+  };
+  const check=()=>{
+    if(pinOk(v)){store.pinFail=0;save();closeSheet();onOk();return;}
+    store.pinFail=(store.pinFail||0)+1;
+    if(store.pinFail>=5){store.pinFail=0;store.pinUntil=Date.now()+30000;}
+    save();v="";draw();buzz([40,40,40]);sfx.sad();
+    dots.classList.remove("bad");void dots.offsetWidth;dots.classList.add("bad");
+    msg.textContent="番号がちがいます";lockUI();
+  };
+  const press=k=>{
+    if(locked())return;
+    if(k==="C")v="";else if(k==="⌫")v=v.slice(0,-1);else if(v.length<8){v+=k;sfx.pop();}
+    draw();if(!msg.dataset.lock)msg.textContent="";
+    if(v.length===8)setTimeout(check,120);
+  };
+  btns.forEach(b=>b.onclick=()=>press(b.dataset.k));
+  $("#pinCancel",sc).onclick=closeSheet;
+  const onKey=e=>{
+    if(!sc.isConnected){document.removeEventListener("keydown",onKey);return;}
+    if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace")press("⌫");else if(e.key==="Escape")closeSheet();
+  };
+  document.addEventListener("keydown",onKey);
+  lockUI();
+}
+
 // ===== タブ =====
 function setTab(t){
   store.tab=t;save();
@@ -673,7 +731,7 @@ function openStage(n){
     <button class="btn-p" id="goStage">スタート！</button>
     <div class="official ${off?"on":""}">
       ${off?`<div class="off-stamp">${stampSVG("合格",`第${n}段階`,fmtDay(off))}</div><div class="grow"><b>本番で合格済み</b>${fmtDay(off)}にスタンプ獲得<br><button class="linkbtn" id="offUndo">取り消す</button></div>`
-        :`<div class="grow"><b>本番の口頭試問で合格したら</b>ここでスタンプを押して記録しよう</div><button class="btn-off" id="offSet">合格スタンプ</button>`}
+        :`<div class="grow"><b>本番の口頭試問で合格したら</b>先生に暗証番号を入れてもらってスタンプ</div><button class="btn-off" id="offSet">先生が押す</button>`}
     </div>`);
   const hint=()=>{$("#rsHint",sc).innerHTML=store.rstyle==="oral"
     ?(st.upto?"本番と同じく<b>画面に経穴は出ません</b>。声に出して言い、経絡を言い終えるたびに大きなボタンをタップ。最後に自己採点します。":"<b>名前は画面に出ません</b>。流注を指でなぞりながら、1つ言うごとにボタンをタップ。最後に自己採点します。")
@@ -682,11 +740,11 @@ function openStage(n){
   $$("[data-rs]",sc).forEach(b=>b.onclick=()=>{store.rstyle=b.dataset.rs;save();$$("[data-rs]",sc).forEach(x=>x.setAttribute("aria-pressed",x===b));hint();});
   $("#goStage",sc).onclick=()=>startStage(n,store.rstyle);
   const os=$("#offSet",sc);
-  if(os)os.onclick=()=>{store.official[n]=Date.now();save();closeSheet();renderRally();
+  if(os)os.onclick=()=>askPin(`第${n}段階に合格スタンプを押す`,()=>{store.official[n]=Date.now();save();closeSheet();renderRally();
     slam(stampSVG("合格",`第${n}段階`,fmtDay(Date.now())));setTimeout(()=>{confetti();sfx.fanfare();},350);
-    toast(`第${n}段階 合格スタンプを押しました`);};
+    toast(`第${n}段階 合格スタンプを押しました`);});
   const ou=$("#offUndo",sc);
-  if(ou)ou.onclick=()=>{delete store.official[n];save();renderRally();openStage(n);toast("スタンプを取り消しました");};
+  if(ou)ou.onclick=()=>askPin(`第${n}段階のスタンプを取り消す`,()=>{delete store.official[n];save();renderRally();openStage(n);toast("スタンプを取り消しました");});
 }
 function startStage(n,style){closeSheet();if(style==="oral")startOral(n);else start({mode:"rally",stage:n});}
 
@@ -823,7 +881,7 @@ function rallyResult(l){
     chain=`<div><p class="label">${m.name}</p><div class="chain">${m.pts.map((p,i)=>`<span class="${i<l.fail.i?"":i===l.fail.i?"no":"rest"}">${esc(p.n)}</span>`).join("")}</div></div>`;}
   const nextOk=l.status==="clear"&&l.stage<NST;
   const sc=openSheet(`<div class="rr">${head}</div>${splitChart(l)}${chain}
-    ${l.status==="clear"&&!store.official[l.stage]?`<p class="hint" style="text-align:center">本番で合格したら、スタンプカードから「合格スタンプ」を押そう</p>`:""}
+    ${l.status==="clear"&&!store.official[l.stage]?`<p class="hint" style="text-align:center">本番で合格したら、先生にスタンプを押してもらおう</p>`:""}
     <div class="actions">
       ${nextOk?`<button class="btn-p" id="rNext">第${l.stage+1}段階に進む</button><button class="btn-s" id="rAgain">もう一度</button>`:`<button class="btn-p" id="rAgain">もう一度チャレンジ</button>`}
       ${(l.status==="fail"&&l.fail&&st.upto)?`<button class="btn-s" id="rPrac">${MI[l.fail.m].short}を累積リハーサルで練習</button>`:""}
