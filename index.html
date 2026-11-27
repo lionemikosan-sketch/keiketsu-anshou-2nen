@@ -385,6 +385,36 @@ h1,h2,h3{text-wrap:balance}
 .omini{width:36px;color:var(--red)}
 .omini .stamp{transform:rotate(-12deg)}
 .ptime{font-weight:900;color:var(--red);font-variant-numeric:tabular-nums;white-space:nowrap}
+/* ---------- ログイン画面 ---------- */
+#gate{position:fixed;inset:0;z-index:95;background:linear-gradient(160deg,#FF9A4D 0%,#F26A1B 48%,#D4520A 100%);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:env(safe-area-inset-top,0px) var(--gut-r) env(safe-area-inset-bottom,0px) var(--gut-l)}
+#gate::before{content:"";position:fixed;inset:0;background-image:radial-gradient(rgba(255,255,255,.18) 2px,transparent 2.3px);background-size:18px 18px;pointer-events:none}
+#gate.bye{animation:gbye .45s ease-in forwards}
+@keyframes gbye{to{opacity:0;transform:scale(1.06)}}
+.g-wrap{position:relative;min-height:100%;max-width:400px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:22px 0 18px}
+.g-mas{width:92px;animation:bob 2.6s ease-in-out infinite;filter:drop-shadow(0 6px 0 rgba(122,46,6,.25))}
+.g-brand{color:#fff;text-align:center;line-height:1.15}
+.g-brand small{display:block;font-size:14px;font-weight:800;letter-spacing:.35em;opacity:.92}
+.g-brand b{display:block;font-size:31px;font-weight:900;letter-spacing:.04em;text-shadow:0 3px 0 rgba(122,46,6,.3)}
+.g-brand span{display:inline-block;margin-top:6px;background:#fff;color:var(--or-d);border-radius:999px;padding:1px 12px;font-size:12px;font-weight:900}
+.g-card{width:100%;background:var(--paper);border-radius:28px;padding:18px 16px 16px;box-shadow:0 8px 0 rgba(122,46,6,.32);display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center}
+.g-card.swap{animation:up .28s cubic-bezier(.2,.8,.2,1)}
+.g-card h2{margin:0;font-size:21px;font-weight:900;line-height:1.3}
+.g-card .hint{margin:0}
+.g-lock{width:46px;height:46px;border-radius:50%;background:var(--soft2);color:var(--or);display:grid;place-items:center}
+.g-lock svg{width:24px;height:24px}
+.g-note{margin:0;display:inline-flex;align-items:center;gap:6px;background:var(--yel);color:var(--ink);border-radius:999px;padding:5px 14px;font-size:13.5px;font-weight:900}
+.g-input{width:100%;border:2px solid var(--line);border-radius:16px;padding:12px 14px;font:inherit;font-size:18px;font-weight:800;color:var(--ink);background:var(--soft2);text-align:center}
+.g-input:focus{outline:none;border-color:var(--or);background:#fff}
+.g-link{background:none;border:0;color:var(--mute);font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:4px}
+.g-foot{margin:0;color:#fff;opacity:.85;font-size:11.5px;font-weight:700}
+.g-card .pin-pad{grid-template-columns:repeat(3,minmax(0,78px))}
+.acct{padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.acct-row{display:flex;align-items:center;gap:12px}
+.acct-ic{width:46px;flex:none}
+.acct-row .grow{flex:1;min-width:0}
+.acct-row b{display:block;font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct-row span{font-size:12px;color:var(--mute);font-weight:700}
+.acct-row .btn-s{padding:8px 12px;font-size:13px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -496,6 +526,7 @@ const ICON={
   stamp:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="2.3"/><circle cx="12" cy="12" r="5.6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M9.4 12.2l1.9 1.9 3.4-3.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   cards:`<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3.5" width="12.5" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="M4.5 7.5v10a3 3 0 0 0 3 3h8" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>`,
   body:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4.6" r="2.6" fill="currentColor"/><path d="M6 9.5h12M12 8.5v6.5M12 15l-3.2 6.5M12 15l3.2 6.5M6.5 9.5l-1.5 5M17.5 9.5l1.5 5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  lock:`<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10.5" rx="3" fill="currentColor"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>`,
   chart:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V12M10 20V6M15 20v-9M20 20V9" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>`,
 };
 
@@ -710,6 +741,84 @@ function askPin(title,onOk){
   lockUI();
 }
 
+// ===== ログイン：初回は先生の8桁で解除 → 名前と4桁のパスワードを決める。2回目からは4桁で開く =====
+const userPinHash=p=>cyrb53("kk2-user:"+p,11);
+const G={};
+function sessionOpen(){try{return sessionStorage.getItem("kk2-open")==="1";}catch(e){return false;}}
+function setSession(on){try{on?sessionStorage.setItem("kk2-open","1"):sessionStorage.removeItem("kk2-open");}catch(e){}}
+function gate(step){
+  let g=$("#gate");
+  if(!g){
+    g=document.createElement("div");g.id="gate";g.setAttribute("role","dialog");g.setAttribute("aria-modal","true");
+    g.innerHTML=`<div class="g-wrap"><div class="g-mas" id="g-mas">${tsubo("normal")}</div>
+      <div class="g-brand"><small>経穴暗唱</small><b>スタンプラリー</b><span>2年生特別バージョン</span></div>
+      <div class="g-card" id="g-card"></div><p class="g-foot">記録はこの端末の中だけに保存されます</p></div>`;
+    document.body.appendChild(g);
+  }
+  const card=$("#g-card");card.classList.remove("swap");void card.offsetWidth;card.classList.add("swap");
+  G.key=null;
+  const nm=store.user&&store.user.name?esc(store.user.name):"";
+  if(step==="teacher"||step==="reset")padStep(card,{len:8,lock:true,title:step==="reset"?"パスワードの再設定":"はじめに ロック解除",
+      sub:step==="reset"?"名前とパスワードを決め直します":"先生が8桁の番号を入れると始められます",note:"先生にロック解除してもらってね",
+      check:v=>pinOk(v),ok:()=>gate("name"),link:step==="reset"?["戻る",()=>gate("login")]:null});
+  else if(step==="name")nameStep(card);
+  else if(step==="pin1")padStep(card,{len:4,title:"パスワードを決めよう",sub:"数字4桁。次からはこれでアプリを開きます",check:()=>true,ok:v=>{G.tmp=v;gate("pin2");}});
+  else if(step==="pin2")padStep(card,{len:4,title:"もう一度入力",sub:"確認のため、同じ4桁を入れてね",check:v=>v===G.tmp,bad:"さっきと違います。決め直してね",badGo:"pin1",
+      ok:()=>{store.user={...(store.user||{}),pin:userPinHash(G.tmp)};delete G.tmp;save();welcome();}});
+  else if(step==="login")padStep(card,{len:4,title:`おかえり、${nm}さん`,sub:"パスワード（4桁）を入れてね",check:v=>userPinHash(v)===store.user.pin,ok:()=>openApp(),
+      link:["パスワードを忘れた・名前を変える",()=>gate("reset")]});
+  else if(step==="change")padStep(card,{len:4,title:"いまのパスワード",sub:"名前・パスワードを変える前に、いまの4桁を入れてね",check:v=>userPinHash(v)===store.user.pin,ok:()=>gate("name"),
+      link:["やめる",()=>openApp()]});
+}
+function padStep(card,o){
+  let v="";
+  card.innerHTML=`${o.lock?`<div class="g-lock">${ICON.lock}</div>`:""}<h2>${o.title}</h2>${o.sub?`<p class="hint">${o.sub}</p>`:""}${o.note?`<p class="g-note">${o.note}</p>`:""}
+    <div class="pin-dots" id="g-dots">${"<i></i>".repeat(o.len)}</div><p class="pin-msg" id="g-msg" role="status"></p>
+    <div class="pin-pad">${["1","2","3","4","5","6","7","8","9","C","0","⌫"].map(k=>`<button data-k="${k}" class="${/[0-9]/.test(k)?"":"fn"}" aria-label="${k==="C"?"全部消す":k==="⌫"?"1文字消す":k}">${k}</button>`).join("")}</div>
+    ${o.link?`<button class="g-link" id="g-link">${o.link[0]}</button>`:""}`;
+  const dots=$("#g-dots"),msg=$("#g-msg"),btns=$$(".pin-pad button",card);
+  const locked=()=>Date.now()<(store.gateUntil||0);
+  const draw=()=>[...dots.children].forEach((d,i)=>d.classList.toggle("on",i<v.length));
+  const lockUI=()=>{if(!card.isConnected)return;
+    if(!locked()){btns.forEach(b=>b.disabled=false);if(msg.dataset.lock){msg.textContent="";delete msg.dataset.lock;}return;}
+    btns.forEach(b=>b.disabled=true);msg.dataset.lock="1";msg.textContent=`まちがいが続いたので ${Math.ceil(((store.gateUntil||0)-Date.now())/1000)}秒 お休み中`;setTimeout(lockUI,500);};
+  const check=()=>{
+    if(o.check(v)){store.gateFail=0;save();buzz(15);o.ok(v);return;}
+    if(!o.bad){store.gateFail=(store.gateFail||0)+1;if(store.gateFail>=5){store.gateFail=0;store.gateUntil=Date.now()+30000;}save();}
+    v="";draw();buzz([40,40,40]);sfx.sad();
+    dots.classList.remove("bad");void dots.offsetWidth;dots.classList.add("bad");
+    msg.textContent=o.bad||"番号がちがいます";lockUI();
+    if(o.badGo)setTimeout(()=>gate(o.badGo),1100);
+  };
+  const press=k=>{if(locked())return;
+    if(k==="C")v="";else if(k==="⌫")v=v.slice(0,-1);else if(v.length<o.len){v+=k;sfx.pop();}
+    draw();if(!msg.dataset.lock)msg.textContent="";if(v.length===o.len)setTimeout(check,140);};
+  btns.forEach(b=>b.onclick=()=>press(b.dataset.k));
+  if(o.link)$("#g-link").onclick=o.link[1];
+  G.key=e=>{if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace")press("⌫");};
+  lockUI();
+}
+function nameStep(card){
+  card.innerHTML=`<h2>あなたの名前</h2><p class="hint">スタンプカードに表示されます</p>
+    <input class="g-input" id="g-name" maxlength="16" autocomplete="off" placeholder="例：はり きゅう子" value="${store.user&&store.user.name?esc(store.user.name):""}">
+    <p class="pin-msg" id="g-msg"></p><button class="btn-p" id="g-next" style="width:100%">次へ（パスワードを決める）</button>`;
+  const inp=$("#g-name"),go=()=>{const n=inp.value.trim().replace(/\s+/g," ");if(!n){$("#g-msg").textContent="名前を入れてね";inp.focus();return;}
+    store.user={...(store.user||{}),name:n.slice(0,16)};save();gate("pin1");};
+  $("#g-next").onclick=go;inp.onkeydown=e=>{if(e.key==="Enter")go();};
+  setTimeout(()=>inp.focus(),300);
+}
+function welcome(){
+  const card=$("#g-card");$("#g-mas").innerHTML=tsubo("happy");
+  card.innerHTML=`<h2>ようこそ、${esc(store.user.name)}さん！</h2><p class="hint">準備ができました。スタンプラリー、がんばろう！</p>`;
+  confetti();sfx.fanfare();setTimeout(openApp,1500);
+}
+function openApp(){
+  setSession(true);G.key=null;const g=$("#gate");
+  if(g){g.classList.add("bye");setTimeout(()=>g.remove(),450);}
+  render();
+}
+document.addEventListener("keydown",e=>{if($("#gate")&&G.key){e.stopImmediatePropagation();G.key(e);}},true);
+
 // ===== タブ =====
 function setTab(t){
   store.tab=t;save();
@@ -763,7 +872,7 @@ function renderRally(){
       <div class="score-sub"><span><i style="background:var(--red)"></i>本番スタンプ ${offN}/${NST}</span><span><i style="background:var(--or-l);opacity:.55"></i>練習クリア ${pracN}/${NST}</span></div>
     </section>
     <section>
-      <div class="sec-h"><h2>スタンプカード</h2><span>タップして挑戦</span></div>
+      <div class="sec-h"><h2>${store.user&&store.user.name?esc(store.user.name)+"さんの":""}スタンプカード</h2><span>タップして挑戦</span></div>
       <div class="stamps">${STAGES.map(st=>{const s=stStat(st.n),off=store.official[st.n];
         return `<button class="slot ${st.n===1?"wide":st.upto==="GV"||st.upto==="CV"?"half":""} ${off?"off":""} ${s.clears?"prac":""} ${nx&&nx.n===st.n?"next":""}" data-stage="${st.n}" aria-label="第${st.n}段階 ${st.label} 制限${st.limit}秒${off?" 合格済み":""}">
           <span class="ring"><span class="no">${st.n}</span>${off?offStamp(st.n):""}</span>
@@ -1053,6 +1162,7 @@ function renderLog(){
       <span class="bv ${best!=null&&best<=st.limit?"ok":""}">${best!=null?`${best.toFixed(1)}`:"—"} / ${st.limit}秒</span></div>`;}).join("");
   $("#v-log").innerHTML=`<div class="wrap">
     <header class="ph"><div><h1>記録</h1><p>この端末だけに保存</p></div>${toggles()}</header>
+    ${store.user&&store.user.name?`<section class="box acct"><div class="acct-row"><div class="acct-ic">${tsubo("normal")}</div><div class="grow"><b>${esc(store.user.name)}さん</b><span>パスワード設定済み</span></div><button class="btn-s" id="acLock">ロックする</button></div><button class="linkbtn" id="acEdit" style="align-self:flex-start">名前・パスワードを変える</button></section>`:""}
     ${offSection()}
     <section class="box bests"><div class="sec-h" style="margin:0"><h2>ラリーのベストタイム</h2></div>${rows}
       <div class="legend"><span><i></i>言い切れたベスト</span><span><b></b>制限時間</span></div></section>
@@ -1061,6 +1171,8 @@ function renderLog(){
     ${store.logs.length?'<div class="confirm" id="clr"><button id="clr1">履歴をすべて消す</button></div>':""}
   </div>`;
   const v=$("#v-log");bindToggles(v);
+  const al=$("#acLock",v);if(al)al.onclick=()=>{setSession(false);gate("login");};
+  const ae=$("#acEdit",v);if(ae)ae.onclick=()=>gate("change");
   const c=$("#clr1",v);if(c)c.onclick=()=>{$("#clr",v).innerHTML=`<span>${store.logs.length}件の履歴を消します（本番スタンプは残ります）。元に戻せません。</span><button class="danger" id="clrY">消す</button><button id="clrN">やめる</button>`;
     $("#clrY",v).onclick=()=>{store.logs=[];save();renderLog();};$("#clrN",v).onclick=renderLog;};
 }
@@ -1273,6 +1385,7 @@ document.addEventListener("keydown",e=>{
 $("#tabbar").innerHTML=[["rally","stamp","スタンプラリー"],["prac","cards","練習"],["zukan","body","ずかん"],["log","chart","記録"]].map(([t,ic,l])=>`<button data-tab="${t}">${ICON[ic]}<span>${l}</span></button>`).join("");
 $$("#tabbar button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 if(location.hash==="#zukan")store.tab="zukan";
+if(!store.user||!store.user.pin)gate("teacher");else if(!sessionOpen())gate("login");
 setTab(["rally","prac","zukan","log"].includes(store.tab)?store.tab:"rally");
 </script>
 </body>
