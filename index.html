@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="2年生特別バージョン：肺経から肝経まで全12経のスタンプラリーに挑戦できるタイムアタック">
+<meta name="description" content="2年生特別バージョン：肺経から任脈まで十四経361穴のスタンプラリーに挑戦できるタイムアタック">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -96,7 +96,8 @@ h1,h2,h3{text-wrap:balance}
 .score-sub{font-size:12px;color:var(--mute);font-weight:700;display:flex;gap:12px;flex-wrap:wrap}
 .score-sub i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 
-.stamps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stamps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.stamps>.slot{grid-column:span 2}
 .slot{position:relative;background:var(--paper);border:2px solid var(--line);border-radius:20px;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:1px;box-shadow:0 4px 0 var(--line);min-width:0;transition:transform .06s}
 .slot:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
 .slot .ring{position:relative;width:72%;max-width:86px;aspect-ratio:1;border-radius:50%;border:2.5px dashed var(--faint);display:grid;place-items:center;margin-bottom:6px}
@@ -110,7 +111,10 @@ h1,h2,h3{text-wrap:balance}
 .slot.off .ring{border-color:transparent;background:transparent}
 .slot.off .no{opacity:0}
 .slot .stamp{position:absolute;inset:-12%;width:124%;height:124%;color:var(--red);transform:rotate(-12deg)}
-.slot.wide{grid-column:1/-1;flex-direction:row;justify-content:center;gap:14px;padding:10px 14px}
+.stamps>.slot.half{grid-column:span 3;flex-direction:row;justify-content:center;gap:10px;padding:10px 8px}
+.slot.half .ring{width:52px;margin:0;flex:none}
+.slot.half .txt{align-items:flex-start}
+.stamps>.slot.wide{grid-column:1/-1;flex-direction:row;justify-content:center;gap:14px;padding:10px 14px}
 .slot.wide .ring{width:64px;margin:0}
 .slot.wide .nm{font-size:15px}
 .slot .txt{display:flex;flex-direction:column;align-items:center;min-width:0;max-width:100%}
@@ -411,24 +415,27 @@ const CVGV = ["GV","CV"];
 
 // ===== スタンプラリー 2年生特別バージョン（肺経〜肝経） =====
 const STAGES=[
-  {n:1,label:"十二経脈の正式名称",short:"正式名称",upto:null,limit:40,pt:5,cum:5},
-  {n:2,label:"肺経",short:"肺経",upto:"LU",limit:10,pt:7,cum:12},
-  {n:3,label:"大腸経まで",short:"大腸経まで",upto:"LI",limit:25,pt:8,cum:20},
-  {n:4,label:"胃経まで",short:"胃経まで",upto:"ST",limit:60,pt:8,cum:28},
-  {n:5,label:"脾経まで",short:"脾経まで",upto:"SP",limit:75,pt:8,cum:36},
-  {n:6,label:"心経まで",short:"心経まで",upto:"HT",limit:85,pt:8,cum:44},
-  {n:7,label:"小腸経まで",short:"小腸経まで",upto:"SI",limit:100,pt:8,cum:52},
-  {n:8,label:"膀胱経まで",short:"膀胱経まで",upto:"BL",limit:150,pt:8,cum:60},
-  {n:9,label:"腎経まで",short:"腎経まで",upto:"KI",limit:170,pt:8,cum:68},
+  {n:1,label:"十二経脈の正式名称",short:"正式名称",upto:null,limit:40,pt:4,cum:4},
+  {n:2,label:"肺経",short:"肺経",upto:"LU",limit:10,pt:5,cum:9},
+  {n:3,label:"大腸経まで",short:"大腸経まで",upto:"LI",limit:25,pt:7,cum:16},
+  {n:4,label:"胃経まで",short:"胃経まで",upto:"ST",limit:60,pt:7,cum:23},
+  {n:5,label:"脾経まで",short:"脾経まで",upto:"SP",limit:75,pt:7,cum:30},
+  {n:6,label:"心経まで",short:"心経まで",upto:"HT",limit:85,pt:7,cum:37},
+  {n:7,label:"小腸経まで",short:"小腸経まで",upto:"SI",limit:100,pt:7,cum:44},
+  {n:8,label:"膀胱経まで",short:"膀胱経まで",upto:"BL",limit:150,pt:7,cum:51},
+  {n:9,label:"腎経まで",short:"腎経まで",upto:"KI",limit:170,pt:7,cum:58},
   // 2年生特別：1年生の表と同じ「1穴 約0.78秒・5秒刻み」で延長
-  {n:10,label:"心包経まで",short:"心包経まで",upto:"PC",limit:180,pt:8,cum:76},
-  {n:11,label:"三焦経まで",short:"三焦経まで",upto:"TE",limit:195,pt:8,cum:84},
-  {n:12,label:"胆経まで",short:"胆経まで",upto:"GB",limit:230,pt:8,cum:92},
-  {n:13,label:"肝経まで",short:"肝経まで",upto:"LR",limit:240,pt:8,cum:100},
+  {n:10,label:"心包経まで",short:"心包経まで",upto:"PC",limit:180,pt:7,cum:65},
+  {n:11,label:"三焦経まで",short:"三焦経まで",upto:"TE",limit:195,pt:7,cum:72},
+  {n:12,label:"胆経まで",short:"胆経まで",upto:"GB",limit:230,pt:7,cum:79},
+  {n:13,label:"肝経まで",short:"肝経まで",upto:"LR",limit:240,pt:7,cum:86},
+  {n:14,label:"督脈まで",short:"督脈まで",upto:"GV",limit:260,pt:7,cum:93},
+  {n:15,label:"任脈まで",short:"任脈まで",upto:"CV",limit:280,pt:7,cum:100},
 ];
 const MAXPT=STAGES.reduce((a,s)=>a+s.pt,0), NST=STAGES.length;
 const PERIOD={from:new Date(2026,10,19),to:new Date(2027,1,26,23,59,59)};
-const stIds=st=>st.upto?FLOW.slice(0,FLOW.indexOf(st.upto)+1):[];
+const ORDER14=FLOW.concat(CVGV);   // 肺経…肝経 → 督脈 → 任脈
+const stIds=st=>st.upto?ORDER14.slice(0,ORDER14.indexOf(st.upto)+1):[];
 const stCount=st=>st.upto?stIds(st).reduce((a,id)=>a+MI[id].pts.length,0):12;
 const stUnit=st=>st.upto?"穴":"経";
 
@@ -625,7 +632,7 @@ function renderRally(){
     if(stStat(nx.n).clears)msg+="。練習はクリア済み、本番もいける！";}
   $("#v-rally").innerHTML=`<div class="wrap">
     <header class="hero">
-      <div class="hero-meta"><span class="tag">2年生特別バージョン</span><span class="period">肺経 → 肝経<b>全12経 309穴</b></span></div>
+      <div class="hero-meta"><span class="tag">2年生特別バージョン</span><span class="period">肺経 → 任脈<b>十四経 361穴</b></span></div>
       <h1><small>経穴暗唱</small>スタンプラリー</h1>
       <div class="talk"><div class="mascot">${tsubo(mood)}</div><div class="bubble">${msg}</div></div>
     </header>
@@ -637,7 +644,7 @@ function renderRally(){
     <section>
       <div class="sec-h"><h2>スタンプカード</h2><span>タップして挑戦</span></div>
       <div class="stamps">${STAGES.map(st=>{const s=stStat(st.n),off=store.official[st.n];
-        return `<button class="slot ${st.n===1?"wide":""} ${off?"off":""} ${s.clears?"prac":""} ${nx&&nx.n===st.n?"next":""}" data-stage="${st.n}" aria-label="第${st.n}段階 ${st.label} 制限${st.limit}秒${off?" 合格済み":""}">
+        return `<button class="slot ${st.n===1?"wide":st.upto==="GV"||st.upto==="CV"?"half":""} ${off?"off":""} ${s.clears?"prac":""} ${nx&&nx.n===st.n?"next":""}" data-stage="${st.n}" aria-label="第${st.n}段階 ${st.label} 制限${st.limit}秒${off?" 合格済み":""}">
           <span class="ring"><span class="no">${st.n}</span>${off?stampSVG("合格",`第${st.n}段階`,fmtDay(off)):""}</span>
           <span class="txt"><span class="nm">${st.short}</span><span class="lim"><b>${st.limit}秒</b>${st.upto?` · ${stCount(st)}穴`:" · 12経"}</span></span>
           ${s.clears&&!off?`<span class="pb">練習○</span>`:""}</button>`;}).join("")}</div>
@@ -649,7 +656,7 @@ function renderRally(){
         <li><span>2</span>毎段階、肺経からその段階の経絡まで順に全経穴を暗唱する。</li>
         <li><span>3</span>見本を見ず、経穴のおおよその位置を指しながら名前を言う。</li>
       </ol>
-      <div class="haiten"><span>1段クリア＝スタンプ1個</span><span>配点：正式名称5点 / 肺経7点 / 以降各8点（100点満点）</span></div>
+      <div class="haiten"><span>1段クリア＝スタンプ1個</span><span>配点：正式名称4点 / 肺経5点 / 以降各7点（100点満点）</span></div>
     </section>
   </div>`;
   $$("[data-stage]",$("#v-rally")).forEach(b=>b.onclick=()=>openStage(+b.dataset.stage));
