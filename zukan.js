@@ -26,15 +26,25 @@ function closed(P){
   return d+"Z";
 }
 // 経絡の線：点の間隔がばらばらでも膨らんだり折り返したりしないよう、接線の長さを区間の長さで抑える
-function open(P){
-  if(P.length<2)return"";let d=`M${P[0][0]},${P[0][1]}`;
+function curves(P){ // [始点, 制御点1, 制御点2, 終点] の並び
   const lim=(v,L)=>{const m=Math.hypot(v[0],v[1]),mx=L*0.36;return m>mx&&m>0?[v[0]*mx/m,v[1]*mx/m]:v;};
+  const C=[];
   for(let i=0;i<P.length-1;i++){
     const p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||P[i+1],L=Math.hypot(p2[0]-p1[0],p2[1]-p1[1]);
     const t1=lim([(p2[0]-p0[0])/6,(p2[1]-p0[1])/6],L),t2=lim([(p3[0]-p1[0])/6,(p3[1]-p1[1])/6],L);
-    d+=` C${f1(p1[0]+t1[0])},${f1(p1[1]+t1[1])} ${f1(p2[0]-t2[0])},${f1(p2[1]-t2[1])} ${p2[0]},${p2[1]}`;
+    C.push([p1,[p1[0]+t1[0],p1[1]+t1[1]],[p2[0]-t2[0],p2[1]-t2[1]],p2]);
   }
+  return C;
+}
+function open(P){
+  if(P.length<2)return"";let d=`M${P[0][0]},${P[0][1]}`;
+  for(const [,c1,c2,p2] of curves(P))d+=` C${f1(c1[0])},${f1(c1[1])} ${f1(c2[0])},${f1(c2[1])} ${p2[0]},${p2[1]}`;
   return d;
+}
+function cubicLen([a,b,c,d]){ // 1本の3次曲線の長さ（16分割の折れ線で近似）
+  let L=0,px=a[0],py=a[1];
+  for(let i=1;i<=16;i++){const u=i/16,v=1-u,x=v*v*v*a[0]+3*v*v*u*b[0]+3*v*u*u*c[0]+u*u*u*d[0],y=v*v*v*a[1]+3*v*v*u*b[1]+3*v*u*u*c[1]+u*u*u*d[1];L+=Math.hypot(x-px,y-py);px=x;py=y;}
+  return L;
 }
 const mir=d=>d.replace(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g,(_,x,y)=>`${MX(+x)},${y}`);
 const det=(d,cls="det")=>`<path class="${cls}" d="${d}"/>`;
@@ -241,7 +251,7 @@ function draw(){
   q("#z-tgIn").hidden=!m.internal||!!Q;
   svg.classList.toggle("showin",!!(m.internal&&q("#z-tgIn").getAttribute("aria-pressed")==="true"));
   if(sel>=0)markSel();
-  measure();apply();
+  segLen=null;apply();
 }
 function crossMarks(v){
   let out="";
@@ -393,13 +403,16 @@ function select(i,{cam=true}={}){
 }
 
 // ---------- 流注の再生 ----------
+// 再生するときだけ、表示中の向きの線について「各経穴が線の何番目の長さにあるか」を計算する。
+// 経穴は曲線のつなぎ目にあるので、曲線ごとの長さを足していくだけで済む（以前は線を数千点たどっていて胆経が重かった）
 function measure(){
   segLen={};
   mer.segs.forEach((s,k)=>{
+    if(s.v!==view)return;
     const path=q(`#z-seg${k}`,svg);if(!path)return;
-    const L=path.getTotalLength(),N=Math.max(200,Math.round(L*2)),smp=[];
-    for(let j=0;j<=N;j++){const t=L*j/N,pt=path.getPointAtLength(t);smp.push([t,pt.x,pt.y]);}
-    const marks=s.s.filter(x=>!Array.isArray(x)).map(n=>{const p=mer.pts[n-1].p;let b=0,bd=1e9;for(const [t,x,y] of smp){const d=Math.hypot(x-p[0],y-p[1]);if(d<bd){bd=d;b=t;}}return [b,n-1];});
+    const cum=[0];for(const c of curves(segPts(s)))cum.push(cum[cum.length-1]+cubicLen(c));
+    const L=path.getTotalLength(),sc=L/(cum[cum.length-1]||1);
+    const marks=[];s.s.forEach((x,j)=>{if(!Array.isArray(x))marks.push([cum[j]*sc,x-1]);});
     segLen[k]={L,marks};
   });
 }
@@ -410,6 +423,7 @@ function startPlay(){
     if(!playing)return;
     if(k>=mer.segs.length){stopPlay();animateTo(fitRect(focusRect()),700);return;}
     const s=mer.segs[k];if(s.v!==view){setView(s.v);xnote(`${VIEWS[view]}の図へ`);}
+    if(!segLen||!segLen[k])measure();
     const path=q(`#z-seg${k}`,svg),rn=q("#z-runner"),info=segLen[k];if(!path||!info){k++;run();return;}
     const L=info.L,dur=Math.max(1500,L*11),t0=performance.now();let passed=-1;
     const xs=segPts(s),w0=Math.max(...xs.map(p=>p[0]))-Math.min(...xs.map(p=>p[0])),h0=Math.max(...xs.map(p=>p[1]))-Math.min(...xs.map(p=>p[1]));
